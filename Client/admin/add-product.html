@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OneCard Account - Sign In or Create Account</title>
+    <title>Add New Product - My Art Gallery Admin</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -75,7 +75,7 @@
             border-radius: 5px;
             font-weight: bold;
             transition: transform 0.3s ease, background-color 0.3s ease;
-            border: none; /* Ensure buttons don't have default browser borders */
+            border: none;
             cursor: pointer;
         }
 
@@ -210,8 +210,8 @@
         }
 
 
-        /* --- Account Page Specific Styles --- */
-        .account-section {
+        /* --- Add Product Form Specific Styles --- */
+        .add-product-section {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -220,59 +220,35 @@
             background-color: var(--background-color);
         }
 
-        .account-card {
+        .form-card {
             background-color: var(--surface-color);
             border-radius: 8px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px;
-            overflow: hidden;
-        }
-
-        .account-tabs {
-            display: flex;
-            width: 100%;
-            border-bottom: 1px solid #eee;
-        }
-
-        .account-tab-button {
-            flex: 1;
-            padding: 18px 0;
-            text-align: center;
-            background-color: #f8f8f8;
-            color: var(--primary-color);
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .account-tab-button:hover {
-            background-color: #f0f0f0;
-        }
-
-        .account-tab-button.active {
-            background-color: var(--surface-color);
-            color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-
-        .account-content {
+            max-width: 600px; /* Slightly wider for form inputs */
             padding: 30px;
         }
 
-        .account-form label {
+        .form-card h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        #addProductForm label {
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
             color: var(--text-color);
         }
 
-        .account-form input[type="text"],
-        .account-form input[type="email"],
-        .account-form input[type="password"] {
+        #addProductForm input[type="text"],
+        #addProductForm input[type="number"],
+        #addProductForm input[type="email"], /* For consistency, though not in this form */
+        #addProductForm input[type="password"], /* For consistency */
+        #addProductForm textarea,
+        #addProductForm select {
             width: 100%;
             padding: 12px;
             margin-bottom: 20px;
@@ -280,63 +256,42 @@
             border-radius: 5px;
             font-size: 1rem;
             font-family: var(--body-font);
-            box-sizing: border-box; /* Include padding in width */
+            box-sizing: border-box;
         }
 
-        .account-form input[type="text"]:focus,
-        .account-form input[type="email"]:focus,
-        .account-form input[type="password"]:focus {
+        #addProductForm input[type="file"] {
+            width: 100%;
+            padding: 12px 0; /* Adjust padding for file input */
+            margin-bottom: 20px;
+            font-size: 1rem;
+            font-family: var(--body-font);
+            box-sizing: border-box;
+        }
+
+        #addProductForm input[type="text"]:focus,
+        #addProductForm input[type="number"]:focus,
+        #addProductForm input[type="email"]:focus,
+        #addProductForm input[type="password"]:focus,
+        #addProductForm textarea:focus,
+        #addProductForm select:focus {
             outline: none;
             border-color: var(--secondary-color);
             box-shadow: 0 0 0 3px rgba(var(--secondary-color), 0.2);
         }
 
-        .account-form .form-actions {
-            text-align: center;
+        #addProductForm textarea {
+            resize: vertical; /* Allow vertical resizing */
         }
 
-        .account-form .btn {
+        #addProductForm button[type="submit"] {
             width: 100%;
             padding: 15px;
             font-size: 1.1rem;
+            margin-top: 10px;
         }
 
-        .forgot-password {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            color: var(--primary-color);
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.3s ease;
-        }
 
-        .forgot-password:hover {
-            color: var(--secondary-color);
-        }
-
-        .account-tab-pane {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .account-tab-pane.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* --- Responsive Nav Fix (copied from product-detail.html) --- */
+        /* --- Responsive Nav Fix (copied from previous pages) --- */
         @media (max-width: 768px) {
             .nav-links {
                 display: flex;
@@ -390,18 +345,17 @@
                 display: none; /* Hide underline on mobile nav links */
             }
 
-            /* Further mobile adjustments for account page */
-            .account-section {
+            /* Further mobile adjustments for add product page */
+            .add-product-section {
                 padding: 20px;
             }
 
-            .account-content {
+            .form-card {
                 padding: 20px;
             }
 
-            .account-tab-button {
-                font-size: 1rem;
-                padding: 15px 0;
+            .form-card h2 {
+                font-size: 1.8rem;
             }
         }
     </style>
@@ -434,49 +388,35 @@
     </header>
 
     <main>
-        <section class="account-section">
-            <div class="account-card">
-                <div class="account-tabs">
-                    <button class="account-tab-button active" data-tab="signin">Sign In</button>
-                    <button class="account-tab-button" data-tab="register">Create Account</button>
-                </div>
+        <section class="add-product-section">
+            <div class="form-card">
+                <h2>Add New Art Piece</h2>
+                <form id="addProductForm" enctype="multipart/form-data">
+                    <label for="name">Product Name</label>
+                    <input type="text" id="name" name="name" placeholder="E.g., Fish Motif Mithila Saree" required />
 
-                <div id="signin" class="account-tab-pane active account-content">
-                    <h2>Sign In to Your Account</h2>
-                    <form class="account-form">
-                        <label for="signin-email">Email Address</label>
-                        <input type="email" id="signin-email" placeholder="you@example.com" required>
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="6" placeholder="Detailed description of the art piece, its history, materials, etc." required></textarea>
 
-                        <label for="signin-password">Password</label>
-                        <input type="password" id="signin-password" placeholder="••••••••" required>
+                    <label for="price">Price (₹)</label>
+                    <input type="number" id="price" name="price" min="0" step="1" placeholder="Enter price in INR" required />
 
-                        <div class="form-actions">
-                            <button type="submit" class="btn">Sign In</button>
-                        </div>
-                        <a href="#" class="forgot-password">Forgot Password?</a>
-                    </form>
-                </div>
+                    <label for="stock">Stock Quantity</label>
+                    <input type="number" id="stock" name="stock" min="0" step="1" placeholder="Number of items in stock" required />
 
-                <div id="register" class="account-tab-pane account-content">
-                    <h2>Create Your Account</h2>
-                    <form class="account-form">
-                        <label for="register-name">Full Name</label>
-                        <input type="text" id="register-name" placeholder="John Doe" required>
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                        <option value="clothes">Art on Clothes & Sarees</option>
+                        <option value="canvas">Paintings on Canvas & Paper</option>
+                        <option value="decor">Hand-painted Matkas & Decor</option>
+                        <option value="other">Other Art Forms</option>
+                    </select>
 
-                        <label for="register-email">Email Address</label>
-                        <input type="email" id="register-email" placeholder="you@example.com" required>
+                    <label for="image">Upload Image</label>
+                    <input type="file" id="image" name="image" accept="image/*" required />
 
-                        <label for="register-password">Password</label>
-                        <input type="password" id="register-password" placeholder="••••••••" required>
-
-                        <label for="register-phone">Mobile Number</label>
-                        <input type="text" id="register-phone" placeholder="+91 12345" required>
-
-                        <div class="form-actions">
-                            <button type="submit" class="btn">Create Account</button>
-                        </div>
-                    </form>
-                </div>
+                    <button type="submit" class="btn">Add Product</button>
+                </form>
             </div>
         </section>
     </main>
@@ -509,58 +449,54 @@
             });
         });
 
-        // --- Account Tabs Logic ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const tabButtons = document.querySelectorAll('.account-tab-button');
-            const tabPanes = document.querySelectorAll('.account-tab-pane');
+        // --- Add Product Form Submission Logic (Client-side demonstration) ---
+        document.getElementById('addProductForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
 
-            // Function to activate a specific tab
-            function activateTab(tabId) {
-                // Deactivate all buttons and panes
-                tabButtons.forEach(button => button.classList.remove('active'));
-                tabPanes.forEach(pane => pane.classList.remove('active'));
+            const form = event.target;
+            const formData = new FormData(form); // Collects all form data, including file
 
-                // Activate the selected button and pane
-                const activeButton = document.querySelector(`.account-tab-button[data-tab="${tabId}"]`);
-                const activePane = document.getElementById(tabId);
+            // For demonstration, let's log the form data to the console
+            console.log("Product Name:", formData.get('name'));
+            console.log("Description:", formData.get('description'));
+            console.log("Price:", formData.get('price'));
+            console.log("Stock Quantity:", formData.get('stock'));
+            console.log("Category:", formData.get('category'));
+            console.log("Image File:", formData.get('image')); // This will be a File object
 
-                if (activeButton && activePane) {
-                    activeButton.classList.add('active');
-                    activePane.classList.add('active');
+            // You can add more client-side validation here if needed
+            if (formData.get('image').size === 0) {
+                alert('Please select an image to upload.');
+                return;
+            }
+
+            // In a real application, you would send this formData to your backend server
+            // using fetch() or XMLHttpRequest for actual product creation.
+            // Example using fetch:
+            /*
+            fetch('/api/products', { // Replace with your actual API endpoint
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Product added successfully!');
+                    form.reset(); // Clear the form
+                    // Optionally redirect or update a product list
+                } else {
+                    alert('Failed to add product: ' + data.message);
                 }
-            }
-
-            // Event listeners for tab buttons
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const tabId = button.dataset.tab;
-                    activateTab(tabId);
-                });
+            })
+            .catch(error => {
+                console.error('Error adding product:', error);
+                alert('An error occurred while adding the product.');
             });
+            */
 
-            // Handle initial tab selection from URL (for mobile nav links)
-            const urlParams = new URLSearchParams(window.location.search);
-            const initialTab = urlParams.get('tab'); // e.g., ?tab=register
-
-            if (initialTab) {
-                activateTab(initialTab);
-            } else {
-                // Default to signin tab if no specific tab is requested
-                activateTab('signin');
-            }
-
-            // Form submission (for demonstration, just alerts)
-            document.querySelector('#signin form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                alert('Sign In form submitted! (No actual login)');
-                // In a real app, send data to server for authentication
-            });
-
-            document.querySelector('#register form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                alert('Create Account form submitted! (No actual account creation)');
-                // In a real app, send data to server for registration
-            });
+            // For this static demo, just show an alert and reset the form
+            alert('Product added successfully! (Data logged to console)');
+            form.reset();
         });
     </script>
 
