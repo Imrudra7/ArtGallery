@@ -144,4 +144,87 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.reload();
         });
     });
+
+    async function fetchAndRenderCategories() {
+        try {
+            const res = await fetch(`${env.BASE_URL}/api/categories`);
+            const categories = await res.json();
+
+            const tabsContainer = document.querySelector(".tabs");
+            const container = document.querySelector("#products-tabs .container");
+
+            // Create tab buttons and tab content containers
+            categories.forEach((category, index) => {
+                // Create tab button
+                const tabButton = document.createElement("button");
+                tabButton.classList.add("tab-button");
+                tabButton.dataset.tab = `category-${category.id}`;
+                tabButton.textContent = category.category_description;
+                if (index === 0) tabButton.classList.add("active");
+                tabsContainer.insertBefore(tabButton, tabsContainer.querySelector(".dropdown"));
+
+                // Create tab content div
+                const tabContent = document.createElement("div");
+                tabContent.id = `category-${category.id}`;
+                tabContent.classList.add("tab-content");
+                if (index === 0) tabContent.classList.add("active");
+                tabContent.innerHTML = `<h2>${category.category_description}</h2><div class="product-grid"></div>`;
+                container.appendChild(tabContent);
+            });
+
+            // Load products for the default tab
+            if (categories.length > 0) loadProducts(categories[0].id);
+
+            // Attach event listeners
+            document.querySelectorAll(".tab-button[data-tab]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
+                    document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+                    btn.classList.add("active");
+                    document.getElementById(btn.dataset.tab).classList.add("active");
+
+                    const categoryId = btn.dataset.tab.split("-")[1];
+                    loadProducts(categoryId);
+                });
+            });
+        } catch (err) {
+            console.error("Failed to fetch categories:", err);
+        }
+    }
+    async function loadProducts(categoryId) {
+        try {
+            const res = await fetch(`http://localhost:5000/api/productByCategory?category_id=${categoryId}`);
+            const data = await res.json();
+
+            const grid = document.querySelector(`#category-${categoryId} .product-grid`);
+            grid.innerHTML = ""; // Clear old content
+
+            if (data.length === 0) {
+                grid.innerHTML = '<p>No products available in this category.</p>';
+                return;
+            }
+
+            data.forEach(product => {
+                const productHTML = `
+                <div class="product-item">
+                    <img src="${product.image_url}" alt="${product.name}">
+                    <div class="product-info">
+                        <h3>${product.name}</h3>
+                        <p class="description">${product.description}</p>
+                        <div class="product-footer">
+                            <span class="price">₹${product.price}</span>
+                            <a href="#" class="btn">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+                grid.insertAdjacentHTML("beforeend", productHTML);
+            });
+        } catch (err) {
+            console.error("Failed to load products:", err);
+        }
+    }
+
+    // ✅ Start after DOM is ready
+    window.addEventListener("DOMContentLoaded", fetchAndRenderCategories);
 });

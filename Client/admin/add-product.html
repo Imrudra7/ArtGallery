@@ -421,13 +421,15 @@
                     <input type="number" id="stock" name="stock" min="0" step="1" placeholder="Number of items in stock"
                         required />
 
-                    <label for="category">Category</label>
+                    <!-- <label for="category">Category</label>
                     <select id="category" name="category">
                         <option value="clothes">Art on Clothes & Sarees</option>
                         <option value="canvas">Paintings on Canvas & Paper</option>
                         <option value="decor">Hand-painted Matkas & Decor</option>
                         <option value="other">Other Art Forms</option>
-                    </select>
+                    </select> -->
+                    <label for="category">Category</label>
+                    <select id="categorySelect" name="category"></select>
 
                     <label for="image">Upload Image</label>
                     <input type="file" id="image" name="image" accept="image/*" required />
@@ -505,9 +507,9 @@
             event.preventDefault(); // Prevent the default form submission
 
             const form = event.target;
-            const formData = new FormData(form); // Collects all form data, including file
-
-            // For demonstration, let's log the form data to the console
+            const formData = new FormData(form); 
+            console.log(formData);
+            
             console.log("Product Name:", formData.get('name'));
             console.log("Description:", formData.get('description'));
             console.log("Price:", formData.get('price'));
@@ -543,8 +545,22 @@
             //alert('Product added successfully! (Data logged to console)');
             form.reset();
         });
-    </script>
+        async function loadCategories() {
+            const res = await fetch(`${CONFIG.BASE_URL}/api/categories`);
+            const categories = await res.json();
+            const select = document.getElementById("categorySelect");
 
+            categories.forEach(cat => {
+                const option = document.createElement("option");
+                option.value = cat.id;
+                option.textContent = cat.category_description;
+                select.appendChild(option);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", loadCategories);
+    </script>
+    <!-- <script src="../mainscript.js"></script> -->
 </body>
 
 </html>
