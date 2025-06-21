@@ -480,12 +480,16 @@
                 <li><a href="index.html#about">About</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
                 <li class="user-actions-mobile">
-                    <a href="account.html?tab=signin" class="btn-secondary">Sign In</a>
+                    <a href="account.html?tab=signin" id="signin-btn" class="btn-secondary">Sign
+                        In</a>
+                    <a href="#" id="logout-btn" class="btn-secondary" style="display: none;">Logout</a>
                     <a href="account.html?tab=register" class="btn">Create Account</a>
                 </li>
             </ul>
             <div class="user-actions-desktop">
-                <a href="account.html?tab=signin" class="btn-secondary">Sign In</a>
+                <a href="account.html?tab=signin" id="signin-btn" class="btn-secondary">Sign
+                    In</a>
+                <a href="#" id="logout-btn" class="btn-secondary" style="display: none;">Logout</a>
                 <a href="account.html?tab=register" class="btn">Create Account</a>
             </div>
             <button class="menu-toggle" id="menu-toggle">
@@ -736,7 +740,7 @@
             });
         });
     </script>
-
+    <script src="./mainscript.js"></script>
 </body>
 
 </html>

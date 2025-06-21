@@ -8,6 +8,9 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
+    if ( !email || !password ) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
 
     try {
         const userResult = await pool.query(`SELECT * FROM users WHERE email = $1`, [email]);

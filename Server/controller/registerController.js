@@ -8,6 +8,9 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 // Register Controller
 const registerUser = async (req, res) => {
     const { name, email, password, phone } = req.body;
+    if (!name || !email || !password || !phone) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
 
     try {
         const userExists = await pool.query(`SELECT * FROM users WHERE email = $1`, [email]);
