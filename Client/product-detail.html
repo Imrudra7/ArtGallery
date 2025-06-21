@@ -622,6 +622,7 @@
             // In a real scenario, this would redirect to a checkout page with this product.
         });
     </script>
+    <script src="./config.js"></script>
     <script>
         const params = new URLSearchParams(window.location.search);
         const productId = params.get("id");
@@ -631,7 +632,7 @@
             //window.location.href = "/products.html";
         }
 
-        fetch(`http://localhost:5000/api/products/${productId}`)
+        fetch(`${CONFIG.BASE_URL}/api/products/${productId}`)
             .then(res => res.json())
             .then(p => {
                 // Basic Info

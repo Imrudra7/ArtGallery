@@ -471,7 +471,7 @@
             </div>
         </section>
     </main>
-
+    <script src="../config.js"></script>
     <footer class="footer">
         <div class="social-links">
             <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
@@ -513,19 +513,14 @@
             console.log("Price:", formData.get('price'));
             console.log("Stock Quantity:", formData.get('stock'));
             console.log("Category:", formData.get('category'));
-            console.log("Image File:", formData.get('image')); // This will be a File object
+            console.log("Image File:", formData.get('image')); 
 
-            // You can add more client-side validation here if needed
+            
             if (formData.get('image').size === 0) {
                 alert('Please select an image to upload.');
                 return;
             }
-
-            // In a real application, you would send this formData to your backend server
-            // using fetch() or XMLHttpRequest for actual product creation.
-            // Example using fetch:
-
-            fetch('http://localhost:5000/api/addNewProduct', {
+            fetch('${CONFIG.BASE_URL}/api/addNewProduct', {
                 method: 'POST',
                 body: formData
             })
