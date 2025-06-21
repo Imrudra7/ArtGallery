@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     async function loadProducts(categoryId) {
         try {
-            const res = await fetch(`http://localhost:5000/api/productByCategory?category_id=${categoryId}`);
+            const res = await fetch(`${env.BASE_URL}/api/productByCategory?category_id=${categoryId}`);
             const data = await res.json();
 
             const grid = document.querySelector(`#category-${categoryId} .product-grid`);
@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         <p class="description">${product.description}</p>
                         <div class="product-footer">
                             <span class="price">₹${product.price}</span>
-                            <a href="#" class="btn">View Details</a>
+                            <a href="product-detail.html?id=${product.id}" class="btn">View Details</a>
                         </div>
                     </div>
                 </div>

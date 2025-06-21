@@ -40,8 +40,11 @@ router.post('/addNewProduct', upload.single('image'), async (req, res) => {
 
 router.get('/products/:id', async (req, res) => {
     const { id } = req.params;
-
+    if(!id || isNaN(id)) {
+       return res.status(404).json({ error: 'Not a valid product id' });
+    }
     try {
+        
         const result = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
 
         if (result.rows.length === 0) {
@@ -60,7 +63,7 @@ router.get("/categories", async (req, res) => {
 });
 router.get("/productByCategory", async (req, res) => {
     const { category_id } = req.query;
-    
+
     let query = "SELECT * FROM products";
     let params = [];
 
