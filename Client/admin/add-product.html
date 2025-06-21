@@ -513,14 +513,14 @@
             console.log("Price:", formData.get('price'));
             console.log("Stock Quantity:", formData.get('stock'));
             console.log("Category:", formData.get('category'));
-            console.log("Image File:", formData.get('image')); 
+            console.log("Image File:", formData.get('image'));
 
-            
+
             if (formData.get('image').size === 0) {
                 alert('Please select an image to upload.');
                 return;
             }
-            fetch('${CONFIG.BASE_URL}/api/addNewProduct', {
+            fetch(`${CONFIG.BASE_URL}/api/addNewProduct`, {
                 method: 'POST',
                 body: formData
             })
