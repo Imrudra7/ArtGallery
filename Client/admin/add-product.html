@@ -215,7 +215,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: calc(100vh - 150px); /* Adjust based on header/footer height */
+            min-height: calc(100vh - 150px);
+            /* Adjust based on header/footer height */
             padding: 40px 20px;
             background-color: var(--background-color);
         }
@@ -225,7 +226,8 @@
             border-radius: 8px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 600px; /* Slightly wider for form inputs */
+            max-width: 600px;
+            /* Slightly wider for form inputs */
             padding: 30px;
         }
 
@@ -245,8 +247,10 @@
 
         #addProductForm input[type="text"],
         #addProductForm input[type="number"],
-        #addProductForm input[type="email"], /* For consistency, though not in this form */
-        #addProductForm input[type="password"], /* For consistency */
+        #addProductForm input[type="email"],
+        /* For consistency, though not in this form */
+        #addProductForm input[type="password"],
+        /* For consistency */
         #addProductForm textarea,
         #addProductForm select {
             width: 100%;
@@ -261,7 +265,8 @@
 
         #addProductForm input[type="file"] {
             width: 100%;
-            padding: 12px 0; /* Adjust padding for file input */
+            padding: 12px 0;
+            /* Adjust padding for file input */
             margin-bottom: 20px;
             font-size: 1rem;
             font-family: var(--body-font);
@@ -280,7 +285,8 @@
         }
 
         #addProductForm textarea {
-            resize: vertical; /* Allow vertical resizing */
+            resize: vertical;
+            /* Allow vertical resizing */
         }
 
         #addProductForm button[type="submit"] {
@@ -298,7 +304,8 @@
                 flex-direction: column;
                 position: fixed;
                 top: 0;
-                left: -100%; /* Start off-screen */
+                left: -100%;
+                /* Start off-screen */
                 width: 100%;
                 height: 100vh;
                 background-color: var(--surface-color);
@@ -306,11 +313,13 @@
                 justify-content: center;
                 padding-top: 0;
                 transition: left 0.4s ease-in-out;
-                z-index: 999; /* Below toggle, above other content */
+                z-index: 999;
+                /* Below toggle, above other content */
             }
 
             .nav-links.active {
-                left: 0; /* Slide in */
+                left: 0;
+                /* Slide in */
             }
 
             .nav-links li {
@@ -318,15 +327,18 @@
             }
 
             .menu-toggle {
-                display: block; /* Show hamburger icon on mobile */
+                display: block;
+                /* Show hamburger icon on mobile */
             }
 
             .user-actions-desktop {
-                display: none; /* Hide desktop buttons */
+                display: none;
+                /* Hide desktop buttons */
             }
 
             .user-actions-mobile {
-                display: flex; /* Show mobile specific buttons */
+                display: flex;
+                /* Show mobile specific buttons */
                 flex-direction: column;
                 align-items: center;
                 gap: 20px;
@@ -342,7 +354,8 @@
             }
 
             .user-actions-mobile a::after {
-                display: none; /* Hide underline on mobile nav links */
+                display: none;
+                /* Hide underline on mobile nav links */
             }
 
             /* Further mobile adjustments for add product page */
@@ -396,13 +409,17 @@
                     <input type="text" id="name" name="name" placeholder="E.g., Fish Motif Mithila Saree" required />
 
                     <label for="description">Description</label>
-                    <textarea id="description" name="description" rows="6" placeholder="Detailed description of the art piece, its history, materials, etc." required></textarea>
+                    <textarea id="description" name="description" rows="6"
+                        placeholder="Detailed description of the art piece, its history, materials, etc."
+                        required></textarea>
 
                     <label for="price">Price (₹)</label>
-                    <input type="number" id="price" name="price" min="0" step="1" placeholder="Enter price in INR" required />
+                    <input type="number" id="price" name="price" min="0" step="1" placeholder="Enter price in INR"
+                        required />
 
                     <label for="stock">Stock Quantity</label>
-                    <input type="number" id="stock" name="stock" min="0" step="1" placeholder="Number of items in stock" required />
+                    <input type="number" id="stock" name="stock" min="0" step="1" placeholder="Number of items in stock"
+                        required />
 
                     <label for="category">Category</label>
                     <select id="category" name="category">
@@ -414,6 +431,40 @@
 
                     <label for="image">Upload Image</label>
                     <input type="file" id="image" name="image" accept="image/*" required />
+
+                    <!-- Art Form -->
+                    <label for="art_form">Art Form</label>
+                    <input type="text" id="art_form" name="art_form" placeholder="e.g. Mithila Painting" />
+
+                    <!-- Medium -->
+                    <label for="medium">Medium</label>
+                    <input type="text" id="medium" name="medium" placeholder="e.g. Hand-painted on fabric" />
+
+                    <!-- Material -->
+                    <label for="material">Material</label>
+                    <input type="text" id="material" name="material" placeholder="e.g. Cotton Silk" />
+
+                    <!-- Motif -->
+                    <label for="motif">Motif</label>
+                    <input type="text" id="motif" name="motif" placeholder="e.g. Fish (Matsya)" />
+
+                    <!-- Size -->
+                    <label for="size">Size</label>
+                    <input type="text" id="size" name="size" placeholder="e.g. 5.5m Saree + 0.8m Blouse" />
+
+                    <!-- Care Instructions -->
+                    <label for="care_instructions">Care Instructions</label>
+                    <textarea id="care_instructions" name="care_instructions" rows="2"
+                        placeholder="e.g. Dry clean only or gentle hand wash"></textarea>
+
+                    <!-- Origin -->
+                    <label for="origin">Origin</label>
+                    <input type="text" id="origin" name="origin" placeholder="e.g. Bihar, India" />
+
+                    <!-- Note -->
+                    <label for="note">Additional Note</label>
+                    <textarea id="note" name="note" rows="2"
+                        placeholder="e.g. Slight variations are natural..."></textarea>
 
                     <button type="submit" class="btn">Add Product</button>
                 </form>
@@ -450,7 +501,7 @@
         });
 
         // --- Add Product Form Submission Logic (Client-side demonstration) ---
-        document.getElementById('addProductForm').addEventListener('submit', function(event) {
+        document.getElementById('addProductForm').addEventListener('submit', function (event) {
             event.preventDefault(); // Prevent the default form submission
 
             const form = event.target;
@@ -473,29 +524,28 @@
             // In a real application, you would send this formData to your backend server
             // using fetch() or XMLHttpRequest for actual product creation.
             // Example using fetch:
-            /*
-            fetch('/api/products', { // Replace with your actual API endpoint
+
+            fetch('http://localhost:5000/api/addNewProduct', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Product added successfully!');
-                    form.reset(); // Clear the form
-                    // Optionally redirect or update a product list
-                } else {
-                    alert('Failed to add product: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error adding product:', error);
-                alert('An error occurred while adding the product.');
-            });
-            */
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Product added successfully!');
+                        form.reset();
+                    } else {
+                        alert('Failed to add product: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding product:', error);
+                    alert('An error occurred while adding the product.');
+                });
+
 
             // For this static demo, just show an alert and reset the form
-            alert('Product added successfully! (Data logged to console)');
+            //alert('Product added successfully! (Data logged to console)');
             form.reset();
         });
     </script>

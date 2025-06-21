@@ -513,32 +513,26 @@
         <section class="product-detail-section">
             <div class="container">
                 <div class="product-image-container">
-                    <img src="https://i.etsystatic.com/18804869/r/il/d71a68/4802824285/il_794xN.4802824285_l131.jpg"
-                        alt="Fish Motif Mithila Saree">
+                    <img src="" alt="">
                 </div>
                 <div class="product-info-detail">
-                    <h1>Fish Motif Mithila Saree</h1>
-                    <span class="price">₹4500</span>
+                    <h1></h1>
+                    <span class="price"></span>
                     <p class="short-description">
-                        An elegant and meticulously hand-painted cotton silk saree featuring traditional Mithila fish
-                        (matsya) motifs. These intricate designs are symbols of prosperity, fertility, and good luck in
-                        Mithila culture. Perfect for festive occasions or adding an artistic touch to your wardrobe.
+
                     </p>
 
                     <div class="product-specifications">
                         <h3>Product Details</h3>
                         <ul>
-                            <li><strong>Art Form:</strong> Mithila Painting (Madhubani)</li>
-                            <li><strong>Medium:</strong> Hand-painted on fabric</li>
-                            <li><strong>Material:</strong> Cotton Silk Saree</li>
-                            <li><strong>Motif:</strong> Fish (Matsya)</li>
-                            <li><strong>Size:</strong> Standard Saree Length (approx. 5.5m) with unstitched blouse piece
-                                (approx. 0.8m)</li>
-                            <li><strong>Care Instructions:</strong> Dry clean recommended or gentle hand wash in cold
-                                water with mild detergent. Avoid harsh scrubbing.</li>
-                            <li><strong>Origin:</strong> Hand-crafted by skilled artisans from Bihar, India.</li>
-                            <li><strong>Note:</strong> As this is a handmade product, slight variations in design and
-                                color are natural and add to its unique charm.</li>
+                            <li><strong>Art Form:</strong> </li>
+                            <li><strong>Medium:</strong></li>
+                            <li><strong>Material:</strong> </li>
+                            <li><strong>Motif:</strong> </li>
+                            <li><strong>Size:</strong> </li>
+                            <li><strong>Care Instructions:</strong> </li>
+                            <li><strong>Origin:</strong> </li>
+                            <li><strong>Note:</strong> </li>
                         </ul>
                     </div>
 
@@ -628,6 +622,45 @@
             // In a real scenario, this would redirect to a checkout page with this product.
         });
     </script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get("id");
+
+        if (!productId) {
+            alert("Product ID missing!");
+            //window.location.href = "/products.html";
+        }
+
+        fetch(`http://localhost:5000/api/products/${productId}`)
+            .then(res => res.json())
+            .then(p => {
+                // Basic Info
+                document.querySelector('.product-image-container img').src = p.image_url;
+                document.querySelector('.product-image-container img').alt = p.name;
+                document.querySelector('.product-info-detail h1').textContent = p.name;
+                document.querySelector('.product-info-detail .price').textContent = `₹${p.price}`;
+                document.querySelector('.product-info-detail .short-description').textContent = p.description;
+
+                // Specifications
+                const specList = document.querySelector('.product-specifications ul');
+                specList.innerHTML = `
+                <li><strong>Art Form:</strong> ${p.art_form || ''}</li>
+                <li><strong>Medium:</strong> ${p.medium || ''}</li>
+                <li><strong>Material:</strong> ${p.material || ''}</li>
+                <li><strong>Motif:</strong> ${p.motif || ''}</li>
+                <li><strong>Size:</strong> ${p.size || ''}</li>
+                <li><strong>Care Instructions:</strong> ${p.care_instructions || ''}</li>
+                <li><strong>Origin:</strong> ${p.origin || ''}</li>
+                <li><strong>Note:</strong> ${p.note || ''}</li>
+                `;
+            })
+            .catch(err => {
+                console.error("❌ Failed to load product:", err);
+                alert("Product not found.");
+            });
+
+    </script>
+
 
 </body>
 
