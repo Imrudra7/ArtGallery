@@ -3,7 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     const from = document.referrer;
-    if (from && !from.includes("account" && !from.includes("register") && !from.includes("login"))) {
+    if (from && !from.includes("account") && !from.includes("register") && !from.includes("signin")
+        && !from.includes("tab")) {
         localStorage.setItem("redirectAfterLogin", from);
     }
 
@@ -139,6 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
         btn.addEventListener("click", (e) => {
             e.preventDefault();
             localStorage.removeItem("token");
+            localStorage.removeItem("redirectAfterLogin");
             window.location.reload();
         });
     });
