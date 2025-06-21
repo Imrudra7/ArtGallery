@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     const from = document.referrer;
-    if (from && !from.includes("account.html")) {
+    if (from && !from.includes("account" && !from.includes("register") && !from.includes("login"))) {
         localStorage.setItem("redirectAfterLogin", from);
     }
 
