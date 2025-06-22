@@ -12,7 +12,7 @@ app.use(express.json());
 const uploadRoutes = require('./routes/upload');
 const productRoutes = require('./routes/product');
 const accountRoutes = require('./routes/account');
-
+const cartRoutes = require('./routes/cartRoutes');
 
 
 
@@ -21,6 +21,8 @@ const accountRoutes = require('./routes/account');
 app.use('/api', uploadRoutes);
 app.use('/api', productRoutes);
 app.use('/api/account', accountRoutes);
+app.use('/api/cart', cartRoutes);
+
 
 
 app.get('/', (req, res) => {

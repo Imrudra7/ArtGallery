@@ -507,25 +507,32 @@
     <header class="header">
         <div class="container navbar">
             <a href="index.html" class="logo">My Art Gallery</a>
+
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="products.html">Products</a></li>
                 <li><a href="index.html#gallery">Gallery</a></li>
                 <li><a href="index.html#about">About</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
+
                 <li class="user-actions-mobile">
+                    <a href="cart.html">My Cart</a>
                     <a href="account.html?tab=signin" id="signin-btn" class="btn-secondary">Sign
                         In</a>
                     <a href="#" id="logout-btn" class="btn-secondary" style="display: none;">Logout</a>
                     <a href="account.html?tab=register" id="register-btn" class="btn">Create Account</a>
                 </li>
             </ul>
+
             <div class="user-actions-desktop">
                 <a href="account.html?tab=signin" id="signin-btn" class="btn-secondary">Sign
                     In</a>
                 <a href="#" id="logout-btn" class="btn-secondary" style="display: none;">Logout</a>
                 <a href="account.html?tab=register" id="register-btn" class="btn">Create Account</a>
+                <a href="cart.html">  <img src="./image/shopping-bag.png" width="40px" height="40px" 
+                    style="margin-left: 90px;" alt="Cart"></a>
             </div>
+
             <button class="menu-toggle" id="menu-toggle">
                 <i class="fas fa-bars"></i>
             </button>
@@ -632,18 +639,7 @@
             });
         });
 
-        // Add to Cart / Buy Now button alerts (for demonstration)
-        document.getElementById('addToCartBtn').addEventListener('click', function (e) {
-            e.preventDefault(); // Prevent default link behavior
-            alert('Product added to cart!');
-            // In a real scenario, this would send data to a backend or update a cart icon.
-        });
-
-        document.getElementById('buyNowBtn').addEventListener('click', function (e) {
-            e.preventDefault(); // Prevent default link behavior
-            alert('Proceeding to checkout for this product!');
-            // In a real scenario, this would redirect to a checkout page with this product.
-        });
+        
     </script>
     <script src="./config.js"></script>
     <script>

@@ -123,6 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const signinBtns = document.querySelectorAll("#signin-btn");
     const logoutBtns = document.querySelectorAll("#logout-btn");
     const registerBtns = document.querySelectorAll("#register-btn");
+    const mycart = document.querySelectorAll("#mycart");
 
 
     const show = (elems) => elems.forEach(btn => btn.style.display = "inline-block");
@@ -132,10 +133,12 @@ document.addEventListener("DOMContentLoaded", function () {
         hide(signinBtns);
         hide(registerBtns);
         show(logoutBtns);
+        show(mycart);
     } else {
         show(registerBtns);
         show(signinBtns);
         hide(logoutBtns);
+        hide(mycart);
     }
 
     logoutBtns.forEach(btn => {
@@ -146,6 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.reload();
         });
     });
+   
 
     async function fetchAndRenderCategories() {
         try {
@@ -229,4 +233,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ✅ Start after DOM is ready
     window.addEventListener("DOMContentLoaded", fetchAndRenderCategories);
+
+     const addToCartBtn = document.getElementById('addToCartBtn');
+    
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get("id");
+
+    addToCartBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        if (!token) {
+            alert("Please log in to add items to cart.");
+            window.location.href = "/account.html?tab=signin";
+            return;
+        }
+
+        try {
+            const res = await fetch(`${env.BASE_URL}/api/cart/addtocart`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: 1
+                })
+            });
+
+            const result = await res.json();
+
+            if (res.ok) {
+                alert("✅ Product added to cart!");
+            } else {
+                alert("❌ " + result.message);
+            }
+        } catch (err) {
+            console.error("Error adding to cart:", err);
+            alert("Something went wrong.");
+        }
+    });
+    
 });
