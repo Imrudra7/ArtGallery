@@ -29,19 +29,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const body = document.body;
 
-        
+
         if (currentHour >= darkModeStartHour || currentHour < darkModeEndHour) {
-            
+
             body.classList.add('dark-mode');
             console.log("It's nighttime. Applying dark mode.");
         } else {
-            
+
             body.classList.remove('dark-mode');
             console.log("It's daytime. Applying light mode.");
         }
     }
 
-    applyThemeBasedOnTime(); 
+    applyThemeBasedOnTime();
 
 
     if (signinForm) {
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.reload();
         });
     });
-   
+
 
     async function fetchAndRenderCategories() {
         try {
@@ -234,8 +234,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // ✅ Start after DOM is ready
     window.addEventListener("DOMContentLoaded", fetchAndRenderCategories);
 
-     const addToCartBtn = document.getElementById('addToCartBtn');
-    
+    const addToCartBtn = document.getElementById('addToCartBtn');
+
 
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get("id");
@@ -274,5 +274,43 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Something went wrong.");
         }
     });
-    
+
+    const buyNowBtn = document.getElementById('buyNowBtn');
+    if (buyNowBtn) {
+
+        buyNowBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (!token) {
+                alert("Please log in to buy this item.");
+                window.location.href = "/account.html?tab=signin";
+                return;
+            }
+
+            try {
+                const res = await fetch(`${env.BASE_URL}/api/product/buy-now`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: 1,
+                        items: null
+                    })
+                });
+
+                const result = await res.json();
+                const orderId = result.order_id;
+                if (res.ok) {
+                    alert(`✅ Order Placed sucessfull with order id : ${orderId}`);
+                } else {
+                    alert("❌ Order could not be placed!!" + result.message);
+                }
+            } catch (err) {
+                console.error("Error buying product:", err);
+                alert("Something went wrong.");
+            }
+        });
+    }
 });

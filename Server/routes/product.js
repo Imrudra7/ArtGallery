@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const upload = require('../middleware/Multer');
+const verifyToken = require('../middleware/authMiddleware');
+const buyNow = require('../controller/buynowController');
 
 router.post('/addNewProduct', upload.single('image'), async (req, res) => {
     const { name, description, price, stock, category, art_form, medium, material, motif, size, care_instructions, origin, note } = req.body;
@@ -75,5 +77,7 @@ router.get("/productByCategory", async (req, res) => {
     const result = await pool.query(query, params);
     res.json(result.rows);
 });
+
+router.post('/product/buy-now', verifyToken,buyNow );
 
 module.exports = router;
