@@ -1020,7 +1020,7 @@
                             localStorage.removeItem('token'); // Clear invalid token
 
                             localStorage.removeItem("redirectAfterLogin");
-                            window.location.href = '/index.html';
+                            window.location.href = '/';
                         } else {
                             throw new Error(`HTTP error! status: ${res.status}`);
                         }
@@ -1034,7 +1034,7 @@
                     showModal('Failed to load cart. Please try again later.');
                     localStorage.removeItem('token'); // Clear invalid token
                     localStorage.removeItem("redirectAfterLogin");
-                    window.location.href = '/index.html';
+                    window.location.href = '/';
                 }
             }
 
