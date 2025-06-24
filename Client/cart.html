@@ -1000,6 +1000,7 @@
                     // Show sign-in/register buttons if not logged in
                     toggleAuthButtons(false);
                     showModal('Please login to view your cart.');
+                    window.location.href = '/account.html?tab=signin';
                     return;
                 } else {
                     // Show logout button if logged in
@@ -1094,6 +1095,7 @@
                 const token = localStorage.getItem("token");
                 if (!token) {
                     showModal('Please login to update your cart.');
+                    window.location.href = '/account.html?tab=signin';
                     return;
                 }
                 try {
