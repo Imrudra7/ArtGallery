@@ -231,50 +231,52 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // ✅ Start after DOM is ready
-    window.addEventListener("DOMContentLoaded", fetchAndRenderCategories);
+    const productTabsSection = document.getElementById('products-tabs');
 
+    if (productTabsSection) {
+        window.addEventListener("DOMContentLoaded", fetchAndRenderCategories);
+    }
     const addToCartBtn = document.getElementById('addToCartBtn');
 
 
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get("id");
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
 
-    addToCartBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-
-        if (!token) {
-            alert("Please log in to add items to cart.");
-            window.location.href = "/account.html?tab=signin";
-            return;
-        }
-
-        try {
-            const res = await fetch(`${env.BASE_URL}/api/cart/addtocart`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    product_id: productId,
-                    quantity: 1
-                })
-            });
-
-            const result = await res.json();
-
-            if (res.ok) {
-                alert("✅ Product added to cart!");
-            } else {
-                alert("❌ " + result.message);
+            if (!token) {
+                alert("Please log in to add items to cart.");
+                window.location.href = "/account.html?tab=signin";
+                return;
             }
-        } catch (err) {
-            console.error("Error adding to cart:", err);
-            alert("Something went wrong.");
-        }
-    });
 
+            try {
+                const res = await fetch(`${env.BASE_URL}/api/cart/addtocart`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: 1
+                    })
+                });
+
+                const result = await res.json();
+
+                if (res.ok) {
+                    alert("✅ Product added to cart!");
+                } else {
+                    alert("❌ " + result.message);
+                }
+            } catch (err) {
+                console.error("Error adding to cart:", err);
+                alert("Something went wrong.");
+            }
+        });
+    }
     const buyNowBtn = document.getElementById('buyNowBtn');
     if (buyNowBtn) {
 
@@ -313,4 +315,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
+
 });

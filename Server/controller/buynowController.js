@@ -9,7 +9,12 @@ const buyNow = async (req, res) => {
 
         // 🧠 1. If coming from cart (array of products)
         if (Array.isArray(items) && items.length > 0) {
-            orderItems = items;
+            
+
+            orderItems = items.map(item => ({
+                product_id: item.id,
+                quantity: item.quantity
+            }));
         }
         // 🧠 2. If coming from product detail (single product)
         else if (product_id && quantity) {

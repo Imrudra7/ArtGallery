@@ -949,7 +949,7 @@
         </div>
     </footer>
 
-    <!-- Custom Modal for Messages (replaces alert()) -->
+    <!-- Custom Modal for Messages (replaces showModal()) -->
     <div id="custom-modal" class="modal">
         <div class="modal-content">
             <p id="modal-message"></p>
@@ -965,6 +965,7 @@
                 ? "http://localhost:5000"
                 : "https://backendmicroservicewithpostgresdb.onrender.com"
         };
+        const token = localStorage.getItem("token");
         document.addEventListener('DOMContentLoaded', async () => {
             const customModal = document.getElementById('custom-modal');
             const modalMessage = document.getElementById('modal-message');
@@ -974,7 +975,7 @@
             const subtotalAmountElem = document.getElementById('subtotal-amount');
             const shippingAmountElem = document.getElementById('shipping-amount');
             const totalAmountElem = document.getElementById('total-amount');
-            const checkoutBtn = document.getElementById('checkout-btn');
+
 
             const SHIPPING_COST_PER_ITEM = 10.00;
 
@@ -994,7 +995,7 @@
             let cartItems = [];
 
             async function fetchCartFromBackend() {
-                const token = localStorage.getItem("token");
+                
 
                 if (!token) {
                     // Show sign-in/register buttons if not logged in
@@ -1140,16 +1141,7 @@
                 }
             });
 
-            // Checkout button functionality
-            checkoutBtn.addEventListener('click', () => {
-                if (cartItems.length > 0) {
-                    showModal('Proceeding to checkout with your items!');
-                    // In a real application, you would redirect to a checkout page.
-                    // Example: window.location.href = '/checkout';
-                } else {
-                    showModal('Your cart is empty. Please add items before checking out.');
-                }
-            });
+
 
             // --- Dark Mode Toggle ---
             const themeToggleDesktop = document.getElementById('theme-toggle-desktop');
@@ -1275,10 +1267,55 @@
 
             // Initial fetch of cart items and authentication check
             fetchCartFromBackend();
+            const checkoutBtn = document.getElementById('checkout-btn');
+            if (checkoutBtn) {
+                console.log(cartItems);
+                
+                // Checkout button functionality
+                checkoutBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    if (!token) {
+                        showModal("Please log in to buy this item.");
+                        window.location.href = "/account.html?tab=signin";
+                        return;
+                    }
+
+                    if (cartItems.length > 0) {
+                        //showModal('Proceeding to checkout with your items!');
+                        try {
+                            const res = await fetch(`${CONFIG.BASE_URL}/api/product/buy-now`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${token}`
+                                },
+                                body: JSON.stringify({
+                                    product_id: NaN,
+                                    quantity: 0,
+                                    items: cartItems
+                                })
+                            });
+
+                            const result = await res.json();
+                            const orderId = result.order_id;
+                            if (res.ok) {
+                                showModal(`✅ Order Placed sucessfull with order id : ${orderId}`);
+                            } else {
+                                showModal("❌ Order could not be placed!!" + result.message);
+                            }
+                        } catch (err) {
+                            console.error("Error buying product:", err);
+                            showModal("Something went wrong.");
+                        }
+                    } else {
+                        showModal('Your cart is empty. Please add items before checking out.');
+                    }
+                });
+            }
         });
     </script>
-    <!-- Assuming config.js and mainscript.js exist and are needed for other parts of the site -->
-    <script src="./config.js"></script>
+    
+    
     <script src="mainscript.js"></script>
 </body>
 
