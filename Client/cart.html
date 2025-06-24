@@ -881,9 +881,7 @@
 
             <!-- Mobile Navigation (hidden by default, shown with JS) -->
             <div id="mobile-menu">
-                <button class="close-menu-btn" id="close-menu">
-                    <i class="fas fa-times"></i>
-                </button>
+
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="products.html">Products</a></li>
@@ -1017,9 +1015,9 @@
 
                     if (!res.ok) {
                         if (res.status === 401) { // Unauthorized, token might be invalid
-                             showModal('Session expired. Please log in again.');
-                             toggleAuthButtons(false); // Switch to sign-in/register
-                             localStorage.removeItem('token'); // Clear invalid token
+                            showModal('Session expired. Please log in again.');
+                            toggleAuthButtons(false); // Switch to sign-in/register
+                            localStorage.removeItem('token'); // Clear invalid token
                         } else {
                             throw new Error(`HTTP error! status: ${res.status}`);
                         }
@@ -1114,7 +1112,7 @@
                 }
             }
 
-            
+
 
 
             // Event Delegation for Quantity and Remove Buttons
@@ -1182,8 +1180,18 @@
 
             // Toggle mobile menu visibility
             if (menuToggle) {
+
+                // --- Mobile Menu Logic ---
                 menuToggle.addEventListener('click', () => {
-                    mobileMenu.classList.add('active'); // Add active class to show
+                    mobileMenu.classList.toggle('active');
+                    // Toggle icon between bars and times (X)
+                    if (mobileMenu.classList.contains('active')) {
+                        menuIcon.classList.remove('fa-bars');
+                        menuIcon.classList.add('fa-times');
+                    } else {
+                        menuIcon.classList.remove('fa-times');
+                        menuIcon.classList.add('fa-bars');
+                    }
                 });
             }
 
@@ -1229,7 +1237,7 @@
                     if (logoutMobile) logoutMobile.style.display = 'none';
                 }
             }
-            
+
             // Logout functionality
             const logoutBtnDesktop = document.getElementById('logout-btn-desktop');
             const logoutBtnMobile = document.getElementById('logout-btn-mobile');
