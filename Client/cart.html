@@ -1020,7 +1020,7 @@
                             localStorage.removeItem('token'); // Clear invalid token
 
                             localStorage.removeItem("redirectAfterLogin");
-                            window.location.href = '/';
+                            window.location.href = '/account.html?tab=signin';
                         } else {
                             throw new Error(`HTTP error! status: ${res.status}`);
                         }
@@ -1031,10 +1031,10 @@
                     renderCart();
                 } catch (error) {
                     console.error('Error fetching cart:', error);
-                    showModal('Failed to load cart. Please try again later.');
+                    showModal('Failed to load cart. Please log in again.');
                     localStorage.removeItem('token'); // Clear invalid token
                     localStorage.removeItem("redirectAfterLogin");
-                    window.location.href = '/';
+                    window.location.href = '/account.html?tab=signin';
                 }
             }
 
