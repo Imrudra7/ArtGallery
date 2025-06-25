@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const logoutBtns = document.querySelectorAll("#logout-btn");
     const registerBtns = document.querySelectorAll("#register-btn");
     const mycart = document.querySelectorAll("#mycart");
-
+    const orderCard = document.getElementsByClassName('order-card');
 
     const show = (elems) => elems.forEach(btn => btn.style.display = "inline-block");
     const hide = (elems) => elems.forEach(btn => btn.style.display = "none");
@@ -315,6 +315,96 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+    if (orderCard) {
+        let orderItems = [];
+        function renderOrderCards(orderData) {
+            const ordersList = document.getElementById('orders-list');
+            ordersList.innerHTML = ''; // Clear old data
+            const statusClassMap = {
+                Delivered: 'delivered',
+                processing: 'processing',
+                Cancelled: 'cancelled',
+                pending: 'processing',
+                Shipped: 'shipped',
+            };
 
+
+
+            orderData.forEach(order => {
+                const card = document.createElement('section');
+                card.className = 'order-card';
+                const statusClass = statusClassMap[order.status] || '';
+                card.innerHTML = `
+            <div class="order-header">
+                <h3>Order #${order.order_id}</h3>
+                <span class="order-date">Ordered on: ${new Date(order.created_at).toDateString()}</span>
+            </div>
+            <div class="order-details-grid">
+                <div class="detail-item"><strong>Total:</strong><span class="order-total-price"> ₹${order.total_amount}</span></div>
+                <div class="detail-item"><strong>Status:</strong> <span class="order-status ${statusClass}">${order.status}</span></div>
+                <div class="detail-item"><strong>Ship To:</strong> ${order.ship_to}</div>
+                <div class="detail-item"><strong>Items:</strong> ${order.total_unique_items}</div>
+            </div>
+            <div class="order-items-preview">
+                ${order.product_items?.map(item => `
+                    <div class="item-preview">
+                        <img src="${item.image_url}" alt="${item.name}" />
+                        <p>${item.name}</p>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="view-details-button primary-button">View Order Details</button>
+        `;
+
+                ordersList.appendChild(card);
+            });
+        }
+
+        async function fetchAndRenderOrders(e) {
+
+
+            if (!token) {
+                // Show sign-in/register buttons if not logged in
+                //toggleAuthButtons(false);
+                showModal('Please login to view your cart.');
+                window.location.href = '/account.html?tab=signin';
+                return;
+            }
+
+            try {
+                const res = await fetch(`${CONFIG.BASE_URL}/api/user/orders`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    if (res.status === 401) { // Unauthorized, token might be invalid
+                        showModal('Session expired. Please log in again.');
+                        toggleAuthButtons(false); // Switch to sign-in/register
+                        localStorage.removeItem('token'); // Clear invalid token
+
+                        localStorage.removeItem("redirectAfterLogin");
+                        window.location.href = '/account.html?tab=signin';
+                        return;
+                    } else {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                }
+
+                const data = await res.json();
+                orderItems = Array.isArray(data) ? data : [];
+                if (orderItems.length > 0)
+                    renderOrderCards(orderItems);
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                showModal('Failed to load order. Please log in again.');
+                localStorage.removeItem('token'); // Clear invalid token
+                localStorage.removeItem("redirectAfterLogin");
+                window.location.href = '/account.html?tab=signin';
+            }
+        }
+        fetchAndRenderOrders();
+    }
 
 });

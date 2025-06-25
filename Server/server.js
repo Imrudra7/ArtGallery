@@ -13,7 +13,7 @@ const uploadRoutes = require('./routes/upload');
 const productRoutes = require('./routes/product');
 const accountRoutes = require('./routes/account');
 const cartRoutes = require('./routes/cartRoutes');
-
+const userRoutes = require('./routes/userRoutes');
 
 
 
@@ -22,7 +22,7 @@ app.use('/api', uploadRoutes);
 app.use('/api', productRoutes);
 app.use('/api/account', accountRoutes);
 app.use('/api/cart', cartRoutes);
-
+app.use('/api/user', userRoutes);
 
 
 app.get('/', (req, res) => {

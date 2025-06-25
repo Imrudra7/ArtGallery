@@ -778,7 +778,7 @@
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="products.html">Products</a></li>
-                <li><a href="index.html#gallery">Gallery</a></li>
+                <li><a href="Order.html">My Orders</a></li>
                 <li><a href="index.html#about">About</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
                 <!-- Removed li.user-actions-mobile from here to avoid duplication and simplify structure -->
@@ -818,7 +818,7 @@
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="products.html">Products</a></li>
-                    <li><a href="index.html#gallery">Gallery</a></li>
+                    <li><a href="Order.html">My Orders</a></li>
                     <li><a href="index.html#about">About</a></li>
                     <li><a href="index.html#contact">Contact</a></li>
                 </ul>
@@ -835,7 +835,7 @@
     <main class="main-container">
         <h1>My Orders</h1>
 
-        <div class="orders-list">
+        <div class="orders-list"  id="orders-list">
             <section class="order-card">
                 <div class="order-header">
                     <h3>Order #1234567890</h3>
@@ -858,53 +858,22 @@
 
                 <div class="order-items-preview">
                     <div class="item-preview">
-                        <img src="https://via.placeholder.com/60" alt="Product A">
+                        <img src="" alt="Product A">
                         <p>Product Name A</p>
                     </div>
                     <div class="item-preview">
-                        <img src="https://via.placeholder.com/60" alt="Product B">
+                        <img src="" alt="Product B">
                         <p>Product Name B</p>
                     </div>
                     <div class="item-preview">
-                        <img src="https://via.placeholder.com/60" alt="Product C">
+                        <img src="" alt="Product C">
                         <p>Product Name C</p>
                     </div>
                 </div>
                 <button class="view-details-button primary-button">View Order Details</button>
             </section>
 
-            <section class="order-card">
-                <div class="order-header">
-                    <h3>Order #0987654321</h3>
-                    <span class="order-date">Ordered on: June 15, 2024</span>
-                </div>
-                <div class="order-details-grid">
-                    <div class="detail-item">
-                        <strong>Total:</strong> <span class="order-total-price">$75.50</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>Status:</strong> <span class="order-status processing">Processing</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>Ship To:</strong> Jane Smith
-                    </div>
-                    <div class="detail-item">
-                        <strong>Items:</strong> 2
-                    </div>
-                </div>
-                <div class="order-items-preview">
-                    <div class="item-preview">
-                        <img src="https://via.placeholder.com/60" alt="Product D">
-                        <p>Product Name D</p>
-                    </div>
-                    <div class="item-preview">
-                        <img src="https://via.placeholder.com/60" alt="Product E">
-                        <p>Product Name E</p>
-                    </div>
-                </div>
-                <button class="view-details-button primary-button">View Order Details</button>
-            </section>
-
+            
         </div>
     </main>
 
