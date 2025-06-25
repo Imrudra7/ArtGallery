@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders: My Art Gallery</title>
+    <!-- Font Awesome for icons (hamburger, plus, minus, trash, shopping cart) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Define your color variables using CSS custom properties */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --background-color: #ecf0f1;
+            --surface-color: #ffffff;
+            --text-color: #34495e;
+            --heading-font: 'Playfair Display', serif;
+            --body-font: 'Inter', sans-serif;
+        }
+
+        /* Dark mode overrides */
+        body.dark-mode {
+            --background-color: #2c2c2c;
+            --surface-color: #3e3e3e;
+            --text-color: #f5f5f5;
+            --primary-color: #aed581;
+            --secondary-color: #ff7043;
+        }
+
+        /* Apply custom fonts if available, fallback to sans-serif */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;600&display=swap');
+
+        /* --- General Reset & Body --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--body-font);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* --- Global Styles & Utilities --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: var(--heading-font);
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        /* Custom styles for the message modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--surface-color);
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .modal-content button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        .modal-content button:hover {
+            background-color: #24303d;
+            /* Darker primary */
+        }
+
+        /* --- Header & Navigation --- */
+        .header {
+            background-color: var(--surface-color);
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--heading-font);
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1rem;
+            padding-bottom: 5px;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        /* Underline effect on hover */
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--secondary-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* User Actions (Sign In/Create Account) */
+        .user-actions-desktop {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #c0392b;
+            /* Darker shade of secondary color */
+        }
+
+        .cart-icon-desktop {
+            margin-left: 40px;
+            /* Adjusted margin */
+            color: var(--primary-color);
+            font-size: 2rem;
+            /* Adjusted size for clarity */
+            transition: color 0.3s ease;
+        }
+
+        .cart-icon-desktop:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle-btn {
+            padding: 8px;
+            border-radius: 9999px;
+            /* Full rounded */
+            background-color: #e2e8f0;
+            /* bg-gray-200 */
+            color: #2d3748;
+            /* text-gray-800 */
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode .theme-toggle-btn {
+            background-color: #4a5568;
+            /* bg-gray-700 */
+            color: #e2e8f0;
+            /* text-gray-200 */
+        }
+
+        body.dark-mode .theme-toggle-btn .fa-moon {
+            display: none;
+        }
+
+        body.dark-mode .theme-toggle-btn .fa-sun {
+            display: inline-block;
+        }
+
+        .theme-toggle-btn .fa-sun {
+            display: none;
+        }
+
+        /* Hamburger menu for mobile */
+        .menu-toggle {
+            display: none;
+            /* Hidden by default for desktop */
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .mobile-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            /* space-x-4 */
+        }
+
+        /* Mobile Navigation (hidden by default) */
+        #mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 100%;
+            /* Start off-screen */
+            width: 100%;
+            height: 100%;
+            background-color: var(--surface-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            /* space-y-8 */
+            transition: left 0.3s ease;
+            z-index: 50;
+        }
+
+        #mobile-menu.active {
+            left: 0;
+        }
+
+        #mobile-menu .close-menu-btn {
+            position: absolute;
+            top: 24px;
+            /* top-6 */
+            right: 24px;
+            /* right-6 */
+            color: var(--primary-color);
+            font-size: 2rem;
+            /* text-3xl */
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        #mobile-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            /* space-y-6 */
+        }
+
+        #mobile-menu ul li a {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            /* text-2xl */
+            font-weight: 600;
+            /* font-semibold */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        #mobile-menu ul li a:hover {
+            color: var(--secondary-color);
+        }
+
+        #mobile-menu .mobile-auth-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            /* space-y-4 */
+            padding-top: 1.5rem;
+            /* pt-6 */
+        }
+
+        #mobile-menu .mobile-auth-actions .btn-secondary,
+        #mobile-menu .mobile-auth-actions .btn-primary {
+            width: 256px;
+            /* w-64 */
+            text-align: center;
+            padding: 12px 20px;
+            /* px-5 py-3 */
+        }
+
+
+
+        /* --- Footer --- */
+        .footer {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            padding: 32px 20px;
+            /* py-8 */
+            margin-top: 48px;
+            /* mt-12 */
+            text-align: center;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            /* space-x-6 */
+            margin-bottom: 16px;
+            /* mb-4 */
+        }
+
+        .social-links a {
+            color: var(--background-color);
+            font-size: 1.5rem;
+            /* text-2xl */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        .footer p {
+            margin-top: 0;
+            /* Adjusted from mb-4 to avoid double margin */
+        }
+
+
+        /* -------------------------------------- */
+        /* --- RESPONSIVE DESIGN (Media Queries) --- */
+        /* -------------------------------------- */
+        @media (max-width: 767px) {
+
+            /* Equivalent to md:hidden or for screens smaller than 768px */
+            .nav-links {
+                display: none;
+                /* Hide desktop nav links */
+            }
+
+            .user-actions-desktop {
+                display: none;
+                /* Hide desktop auth buttons */
+            }
+
+            .menu-toggle {
+                display: block;
+                /* Show hamburger */
+                margin-left: auto;
+                /* Push to right */
+            }
+
+            .mobile-actions {
+                /* Ensure these are visible when menu-toggle is shown */
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            #mobile-menu {
+                display: flex;
+                /* Ensure mobile menu is a flex container */
+            }
+
+            main h1 {
+                font-size: 1.875rem;
+                /* md:text-4xl */
+            }
+        }
+
+        @media (min-width: 768px) {
+
+            /* Equivalent to md:flex or for screens 768px and wider */
+            .nav-links {
+                display: flex;
+            }
+
+            .user-actions-desktop {
+                display: flex;
+            }
+
+            .mobile-actions {
+                display: none;
+                /* Hide mobile specific actions */
+            }
+
+            .menu-toggle {
+                display: none;
+                /* Hide hamburger */
+            }
+
+            #mobile-menu {
+                display: none !important;
+                /* Force hide mobile menu on desktop */
+            }
+
+            main h1 {
+                font-size: 2.25rem;
+                /* text-3xl */
+            }
+        }
+
+
+        /* Base styles for the main container */
+        .main-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 80px auto 40px auto;
+            padding: 20px;
+            background-color: var(--background-color);
+            font-family: var(--body-font);
+            color: var(--text-color);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+
+        .main-container h1 {
+            font-family: var(--heading-font);
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--background-color);
+            font-size: 2.2em;
+        }
+
+        /* Styles for the list of orders */
+        .orders-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            /* Center cards in row */
+        }
+
+
+        /* Styles for individual order cards */
+        .order-card {
+            flex: 1 1 300px;
+            /* Allows responsive wrapping */
+            max-width: 350px;
+            background-color: var(--surface-color);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--background-color);
+        }
+
+        .order-header h3 {
+            font-family: var(--body-font);
+            /* Using body font for order ID */
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .order-date {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .order-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* Two columns for details */
+            gap: 10px 20px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item strong {
+            color: var(--primary-color);
+        }
+
+        .order-total-price {
+            font-weight: bold;
+            color: var(--secondary-color);
+            /* Highlight total price */
+            font-size: 1.1em;
+        }
+
+        .order-status {
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+
+        .order-status.delivered {
+            background-color: #d4edda;
+            /* Light green */
+            color: #155724;
+            /* Dark green */
+        }
+
+        .order-status.processing {
+            background-color: #fff3cd;
+            /* Light yellow */
+            color: #856404;
+            /* Dark yellow */
+        }
+
+        .order-status.cancelled {
+            background-color: #f8d7da;
+            /* Light red */
+            color: #721c24;
+            /* Dark red */
+        }
+
+        .order-items-preview {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            /* Enable horizontal scrolling if too many items */
+            padding-bottom: 5px;
+            /* Space for scrollbar */
+        }
+
+        .item-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-width: 70px;
+            /* Minimum width for each item preview */
+        }
+
+        .item-preview img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--background-color);
+            margin-bottom: 5px;
+        }
+
+        .item-preview p {
+            margin: 0;
+            font-size: 0.75em;
+            color: #555;
+            white-space: nowrap;
+            /* Prevent wrapping */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* Add ellipsis if text is too long */
+            max-width: 60px;
+            /* Match image width */
+        }
+
+        /* Button styling - using the primary-button class */
+        .view-details-button {
+            width: 100%;
+            /* Make button full width of card */
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin-top: auto;
+            /* Pushes button to the bottom of the flex container */
+        }
+
+        .primary-button {
+            /* Reusing your primary-button styles */
+            background-color: var(--primary-color);
+            color: var(--surface-color);
+        }
+
+        .primary-button:hover {
+            background-color: #3b5a7b;
+        }
+
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                margin-top: 80px;
+                padding: 20px;
+            }
+
+            .main-container h1 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+
+            .orders-list {
+                grid-template-columns: 1fr;
+                /* Stack cards on smaller screens */
+            }
+
+            .order-card {
+                padding: 20px;
+            }
+
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .order-header h3 {
+                font-size: 1.1em;
+            }
+
+            .order-details-grid {
+                grid-template-columns: 1fr;
+                /* Stack details vertically */
+                gap: 8px;
+            }
+
+            .order-items-preview {
+                justify-content: center;
+                /* Center items if few */
+            }
+
+            .item-preview {
+                min-width: 60px;
+            }
+
+            .item-preview img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .item-preview p {
+                font-size: 0.7em;
+                max-width: 50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 8px;
+            }
+
+            .main-container h1 {
+                font-size: 1.5em;
+            }
+
+            .order-card {
+                flex: 1 1 90%;
+                max-width: 95%;
+                padding: 16px;
+            }
+
+            .order-header h3 {
+                font-size: 1em;
+            }
+
+            .view-details-button {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+
+</head>
+
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="header">
+        <div class="container navbar">
+            <a href="index.html" class="logo">My Art Gallery</a>
+
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="index.html#gallery">Gallery</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <!-- Removed li.user-actions-mobile from here to avoid duplication and simplify structure -->
+            </ul>
+
+            <div class="user-actions-desktop">
+                <a href="account.html?tab=signin" id="signin-btn" class="btn-secondary">Sign In</a>
+                <a href="#" id="logout-btn" class="btn-secondary">Logout</a>
+                <a href="account.html?tab=register" id="register-btn" class="btn-primary">Create Account</a>
+                <a href="cart.html" class="cart-icon-desktop">
+                    <i class="fas fa-shopping-bag"></i>
+                </a>
+                <!-- Dark Mode Toggle -->
+                <button id="theme-toggle-desktop" class="theme-toggle-btn">
+                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+
+            <!-- Hamburger menu and mobile cart icon for mobile -->
+            <div class="mobile-actions">
+                <a href="cart.html" class="cart-icon-desktop">
+                    <i class="fas fa-shopping-bag"></i>
+                </a>
+                <button id="theme-toggle-mobile" class="theme-toggle-btn">
+                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-sun"></i>
+                </button>
+                <button class="menu-toggle" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Navigation (hidden by default, shown with JS) -->
+            <div id="mobile-menu">
+
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="products.html">Products</a></li>
+                    <li><a href="index.html#gallery">Gallery</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+                <div class="mobile-auth-actions">
+                    <a href="account.html?tab=signin" id="signin-btn" class="btn-secondary">Sign In</a>
+                    <a href="#" id="logout-btn" class="btn-secondary">Logout</a>
+                    <a href="account.html?tab=register" id="register-btn" class="btn-primary">Create
+                        Account</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <h1>My Orders</h1>
+
+        <div class="orders-list">
+            <section class="order-card">
+                <div class="order-header">
+                    <h3>Order #1234567890</h3>
+                    <span class="order-date">Ordered on: July 1, 2024</span>
+                </div>
+                <div class="order-details-grid">
+                    <div class="detail-item">
+                        <strong>Total:</strong> <span class="order-total-price">$120.00</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Status:</strong> <span class="order-status delivered">Delivered</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Ship To:</strong> John Doe
+                    </div>
+                    <div class="detail-item">
+                        <strong>Items:</strong> 3
+                    </div>
+                </div>
+
+                <div class="order-items-preview">
+                    <div class="item-preview">
+                        <img src="https://via.placeholder.com/60" alt="Product A">
+                        <p>Product Name A</p>
+                    </div>
+                    <div class="item-preview">
+                        <img src="https://via.placeholder.com/60" alt="Product B">
+                        <p>Product Name B</p>
+                    </div>
+                    <div class="item-preview">
+                        <img src="https://via.placeholder.com/60" alt="Product C">
+                        <p>Product Name C</p>
+                    </div>
+                </div>
+                <button class="view-details-button primary-button">View Order Details</button>
+            </section>
+
+            <section class="order-card">
+                <div class="order-header">
+                    <h3>Order #0987654321</h3>
+                    <span class="order-date">Ordered on: June 15, 2024</span>
+                </div>
+                <div class="order-details-grid">
+                    <div class="detail-item">
+                        <strong>Total:</strong> <span class="order-total-price">$75.50</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Status:</strong> <span class="order-status processing">Processing</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Ship To:</strong> Jane Smith
+                    </div>
+                    <div class="detail-item">
+                        <strong>Items:</strong> 2
+                    </div>
+                </div>
+                <div class="order-items-preview">
+                    <div class="item-preview">
+                        <img src="https://via.placeholder.com/60" alt="Product D">
+                        <p>Product Name D</p>
+                    </div>
+                    <div class="item-preview">
+                        <img src="https://via.placeholder.com/60" alt="Product E">
+                        <p>Product Name E</p>
+                    </div>
+                </div>
+                <button class="view-details-button primary-button">View Order Details</button>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <p>&copy; 2025 My Art Gallery. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Custom Modal for Messages (replaces showModal()) -->
+    <div id="custom-modal" class="modal">
+        <div class="modal-content">
+            <p id="modal-message"></p>
+            <button id="modal-close-btn">OK</button>
+        </div>
+    </div>
+
+    <script>
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+        const CONFIG = {
+            BASE_URL: isLocalhost
+                ? "http://localhost:5000"
+                : "https://backendmicroservicewithpostgresdb.onrender.com"
+        };
+        const token = localStorage.getItem("token");
+        document.addEventListener('DOMContentLoaded', async () => {
+            const customModal = document.getElementById('custom-modal');
+            const modalMessage = document.getElementById('modal-message');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const cartItemsContainer = document.getElementById('cart-items-container');
+            const emptyCartMessage = document.getElementById('empty-cart-message');
+            const subtotalAmountElem = document.getElementById('subtotal-amount');
+            const shippingAmountElem = document.getElementById('shipping-amount');
+            const totalAmountElem = document.getElementById('total-amount');
+
+
+            const SHIPPING_COST_PER_ITEM = 10.00;
+
+
+            function showModal(message) {
+                modalMessage.textContent = message;
+                customModal.style.display = 'flex';
+            }
+
+            modalCloseBtn.addEventListener('click', () => customModal.style.display = 'none');
+            customModal.addEventListener('click', (e) => {
+                if (e.target === customModal) {
+                    customModal.style.display = 'none';
+                }
+            });
+
+
+            // --- Dark Mode Toggle ---
+            const themeToggleDesktop = document.getElementById('theme-toggle-desktop');
+            const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+            const body = document.body;
+
+            function toggleTheme() {
+                body.classList.toggle('dark-mode');
+                // Save preference to localStorage
+                if (body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                }
+            }
+
+            // Apply saved theme on load
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-mode');
+            } else if (savedTheme === 'light') {
+                body.classList.remove('dark-mode');
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                // Default to system preference if no saved theme
+                body.classList.add('dark-mode');
+            }
+
+            // Ensure event listeners are only added if elements exist
+            if (themeToggleDesktop) themeToggleDesktop.addEventListener('click', toggleTheme);
+            if (themeToggleMobile) themeToggleMobile.addEventListener('click', toggleTheme);
+
+            // --- Mobile Menu Functionality ---
+            const menuToggle = document.getElementById('menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const closeMenuBtn = document.getElementById('close-menu');
+
+            // Toggle mobile menu visibility
+            if (menuToggle) {
+                const menuIcon = menuToggle.querySelector('i');
+                // --- Mobile Menu Logic ---
+                menuToggle.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('active');
+                    // Toggle icon between bars and times (X)
+                    if (mobileMenu.classList.contains('active')) {
+                        menuIcon.classList.remove('fa-bars');
+                        menuIcon.classList.add('fa-times');
+                    } else {
+                        menuIcon.classList.remove('fa-times');
+                        menuIcon.classList.add('fa-bars');
+                    }
+                });
+            }
+
+            // Close mobile menu
+            if (closeMenuBtn) {
+                closeMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active'); // Remove active class to hide
+                });
+            }
+
+            // Close mobile menu when a nav link is clicked
+            document.querySelectorAll('#mobile-menu ul li a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                });
+            });
+
+            // --- Authentication Button Toggling ---
+            function toggleAuthButtons(isLoggedIn) {
+                const signinDesktop = document.getElementById('signin-btn-desktop');
+                const logoutDesktop = document.getElementById('logout-btn-desktop');
+                const registerDesktop = document.getElementById('register-btn-desktop');
+
+                const signinMobile = document.getElementById('signin-btn-mobile');
+                const logoutMobile = document.getElementById('logout-btn-mobile');
+                const registerMobile = document.getElementById('register-btn-mobile');
+
+                if (isLoggedIn) {
+                    if (signinDesktop) signinDesktop.style.display = 'none';
+                    if (registerDesktop) registerDesktop.style.display = 'none';
+                    if (logoutDesktop) logoutDesktop.style.display = 'block';
+
+                    if (signinMobile) signinMobile.style.display = 'none';
+                    if (registerMobile) registerMobile.style.display = 'none';
+                    if (logoutMobile) logoutMobile.style.display = 'block';
+                } else {
+                    if (signinDesktop) signinDesktop.style.display = 'block';
+                    if (registerDesktop) registerDesktop.style.display = 'block';
+                    if (logoutDesktop) logoutDesktop.style.display = 'none';
+
+                    if (signinMobile) signinMobile.style.display = 'block';
+                    if (registerMobile) registerMobile.style.display = 'block';
+                    if (logoutMobile) logoutMobile.style.display = 'none';
+                }
+            }
+
+            // Logout functionality
+            const logoutBtnDesktop = document.getElementById('logout-btn-desktop');
+            const logoutBtnMobile = document.getElementById('logout-btn-mobile');
+
+            if (logoutBtnDesktop) {
+                logoutBtnDesktop.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    showModal('You have been logged out!');
+                    toggleAuthButtons(false);
+                    // Optionally, clear cart or redirect
+                    cartItems = [];
+                    renderCart();
+                });
+            }
+            if (logoutBtnMobile) {
+                logoutBtnMobile.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    showModal('You have been logged out!');
+                    toggleAuthButtons(false);
+                    // Optionally, clear cart or redirect
+                    cartItems = [];
+                    renderCart();
+                });
+            }
+        });
+
+    </script>
+
+
+    <script src="mainscript.js"></script>
+
+
+
+</body>
+
+</html>
