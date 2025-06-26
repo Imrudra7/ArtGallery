@@ -315,22 +315,18 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-
+    const statusClassMap = {
+        Delivered: 'delivered',
+        processing: 'processing',
+        Cancelled: 'cancelled',
+        pending: 'processing',
+        Shipped: 'shipped',
+    };
     if (orderCard) {
         let orderItems = [];
         function renderOrderCards(orderData) {
             const ordersList = document.getElementById('orders-list');
-            ordersList.innerHTML = ''; // Clear old data
-            const statusClassMap = {
-                Delivered: 'delivered',
-                processing: 'processing',
-                Cancelled: 'cancelled',
-                pending: 'processing',
-                Shipped: 'shipped',
-            };
-
-
-
+            ordersList.innerHTML = '';
             orderData.forEach(order => {
                 const card = document.createElement('section');
                 card.className = 'order-card';
@@ -408,14 +404,53 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchAndRenderOrders();
     }
     const orderDetail = document.getElementsByClassName('orderdetailcontainer');
-    console.log(orderDetail);
-    
+   
+
     if (orderDetail) {
-        console.log("Got Order Detail");
-        
         const orderId = urlParams.get('orderId');
-        console.log(orderId+":orderId");
         
+        function renderOrderDetail(data) {
+            const statusClass = statusClassMap[data.status] || '';
+
+            document.getElementById("orderIdDisplay").innerText = `#OD${data.order_id}`;
+            document.getElementById("orderDate").innerText = new Date(data.created_at).toDateString();
+            document.getElementById("orderStatus").innerText = data.status || "N/A";
+            document.getElementById("orderStatus").className = `status ${statusClass}`;
+            document.getElementById("orderTotal").innerText = `₹${data.total_amount}`;
+            document.getElementById("paymentMethod").innerText = data.payment_method || "N/A";
+
+            // Shipping Info
+            document.getElementById("shippingName").innerText = data.full_name;
+            document.getElementById("shippingAddressLine1").innerText = data.address_line1;
+            document.getElementById("shippingAddressLine2").innerText = data.address_line2;
+            document.getElementById("shippingCityStateZip").innerText = `${data.city}, ${data.state} ${data.postal_code}`;
+            document.getElementById("shippingPhone").innerText = `Phone: ${data.phone}`;
+
+            // Items
+            const itemsList = document.querySelector(".items-list");
+            itemsList.innerHTML = "";
+            data.items.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "order-item-card";
+                card.innerHTML = `
+                        <img src="${item.image_url}" alt="${item.product_name}">
+                        <div class="item-details">
+                            <h3>${item.product_name}</h3>
+                            <p>Quantity: <span class="item-qty">${item.quantity}</span></p>
+                            <p>Price: <span class="item-price">₹${item.price}</span></p>
+                            <p>Seller: ${item.seller}</p>
+                        </div>
+                        <button class="btn-secondary item-action-btn">Return/Exchange</button>
+                        `;
+                itemsList.appendChild(card);
+            });
+
+            // Price summary
+            document.getElementById("subtotalPrice").innerText = `₹${data.subtotal}`;
+            document.getElementById("shippingCost").innerText = `₹${data.shipping_fee}`;
+            document.getElementById("discountAmount").innerText = `- ₹${data.discount}`;
+            document.getElementById("grandTotalPrice").innerText = `₹${data.grand_total}`;
+        }
         async function fetchAndRenderOrderDetail(orderId) {
             if (!token) {
 
@@ -428,7 +463,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const res = await fetch(`${CONFIG.BASE_URL}/api/user/order-detail`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json', 
+                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ orderId })
@@ -450,7 +485,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const data = await res.json();
                 if (data) console.log(data);
-                // renderOrderDetail(data);
+                renderOrderDetail(data[0]);
             } catch (error) {
                 console.error('Error fetching order:', error);
                 showModal('Failed to load order. Please log in again.');

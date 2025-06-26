@@ -621,27 +621,33 @@
         /* Status colors (reusing existing from previous CSS) */
         .status.delivered {
             background-color: #d4edda;
+            /* Light green */
             color: #155724;
+            /* Dark green */
         }
 
         body.dark-mode .status.delivered {
-            background-color: #28a745;
+            background-color: #6fff9179;
             color: #fff;
         }
 
         .status.processing {
-            background-color: #fff3cd;
+             background-color: #fff3cd;
+            /* Light yellow */
             color: #856404;
+            /* Dark yellow */
         }
 
         body.dark-mode .status.processing {
-            background-color: #ffc107;
-            color: #333;
+            background-color: #edf59e;
+            color: #6b5050;
         }
 
         .status.cancelled {
             background-color: #f8d7da;
+            /* Light red */
             color: #721c24;
+            /* Dark red */
         }
 
         body.dark-mode .status.cancelled {
@@ -953,19 +959,19 @@
 
     <main class="orderdetailcontainer">
         <section class="order-detail-summary">
-            <h1>Order Details: <span id="orderIdDisplay">#OD123456789</span></h1>
+            <h1>Order Details: <span id="orderIdDisplay">#OD</span></h1>
             <div class="summary-grid">
                 <div class="summary-item">
-                    <strong>Order Date:</strong> <span id="orderDate">June 26, 2025</span>
+                    <strong>Order Date:</strong> <span id="orderDate"></span>
                 </div>
                 <div class="summary-item">
-                    <strong>Status:</strong> <span id="orderStatus" class="status processing">Processing</span>
+                    <strong>Status:</strong> <span id="orderStatus" class="status processing"></span>
                 </div>
                 <div class="summary-item">
-                    <strong>Total Amount:</strong> <span id="orderTotal" class="price">₹1,599.00</span>
+                    <strong>Total Amount:</strong> <span id="orderTotal" class="price">₹</span>
                 </div>
                 <div class="summary-item">
-                    <strong>Payment Method:</strong> <span id="paymentMethod">Credit Card</span>
+                    <strong>Payment Method:</strong> <span id="paymentMethod"></span>
                 </div>
             </div>
             <button class="btn-primary track-order-btn">Track Order</button>
@@ -975,11 +981,11 @@
             <h2>Shipping Information</h2>
             <div class="address-card">
                 <p><strong>Shipping Address:</strong></p>
-                <p id="shippingName">John Doe</p>
-                <p id="shippingAddressLine1">123, Sample Street</p>
-                <p id="shippingAddressLine2">Near Central Park</p>
-                <p id="shippingCityStateZip">New Delhi, Delhi 110001</p>
-                <p id="shippingPhone">Phone: +91 98765 43210</p>
+                <p id="shippingName"></p>
+                <p id="shippingAddressLine1"></p>
+                <p id="shippingAddressLine2"></p>
+                <p id="shippingCityStateZip"></p>
+                <p id="shippingPhone">Phone: </p>
             </div>
         </section>
 
@@ -987,22 +993,12 @@
             <h2>Items in Your Order</h2>
             <div class="items-list">
                 <div class="order-item-card">
-                    <img src="https://via.placeholder.com/100" alt="Product Image 1">
+                    <img src="" alt="Product Image 1">
                     <div class="item-details">
-                        <h3>Premium Wireless Headphones</h3>
-                        <p>Quantity: <span class="item-qty">1</span></p>
-                        <p>Price: <span class="item-price">₹999.00</span></p>
-                        <p>Seller: Electronics Hub</p>
-                    </div>
-                    <button class="btn-secondary item-action-btn">Return/Exchange</button>
-                </div>
-                <div class="order-item-card">
-                    <img src="https://via.placeholder.com/100" alt="Product Image 2">
-                    <div class="item-details">
-                        <h3>Smartwatch Series 5</h3>
-                        <p>Quantity: <span class="item-qty">1</span></p>
-                        <p>Price: <span class="item-price">₹600.00</span></p>
-                        <p>Seller: Wearable Tech Co.</p>
+                        <h3></h3>
+                        <p>Quantity: <span class="item-qty"></span></p>
+                        <p>Price: <span class="item-price">₹</span></p>
+                        <p>Seller: </p>
                     </div>
                     <button class="btn-secondary item-action-btn">Return/Exchange</button>
                 </div>
@@ -1013,16 +1009,16 @@
             <h2>Payment Details</h2>
             <div class="payment-grid">
                 <div class="payment-item">
-                    <strong>Subtotal:</strong> <span id="subtotalPrice">₹1,599.00</span>
+                    <strong>Subtotal:</strong> <span id="subtotalPrice">₹</span>
                 </div>
                 <div class="payment-item">
-                    <strong>Shipping:</strong> <span id="shippingCost">₹50.00</span>
+                    <strong>Shipping:</strong> <span id="shippingCost">₹</span>
                 </div>
                 <div class="payment-item">
-                    <strong>Discount:</strong> <span id="discountAmount">- ₹50.00</span>
+                    <strong>Discount:</strong> <span id="discountAmount">- ₹</span>
                 </div>
                 <div class="payment-item total">
-                    <strong>Grand Total:</strong> <span id="grandTotalPrice" class="price">₹1,599.00</span>
+                    <strong>Grand Total:</strong> <span id="grandTotalPrice" class="price">₹</span>
                 </div>
             </div>
             <p class="invoice-link">
@@ -1154,7 +1150,7 @@
                 });
             });
 
-            
+
 
 
         });
