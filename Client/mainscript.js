@@ -315,6 +315,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
     if (orderCard) {
         let orderItems = [];
         function renderOrderCards(orderData) {
@@ -353,7 +354,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     </div>
                 `).join('')}
             </div>
-            <button class="view-details-button primary-button">View Order Details</button>
+            <button class="view-details-button primary-button" onclick="viewOrder(${order.order_id})">View Order Details</button>
         `;
 
                 ordersList.appendChild(card);
@@ -366,7 +367,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!token) {
                 // Show sign-in/register buttons if not logged in
                 //toggleAuthButtons(false);
-                showModal('Please login to view your cart.');
+                showModal('Please login to view your Orders.');
                 window.location.href = '/account.html?tab=signin';
                 return;
             }
@@ -406,5 +407,62 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         fetchAndRenderOrders();
     }
+    const orderDetail = document.getElementsByClassName('orderdetailcontainer');
+    console.log(orderDetail);
+    
+    if (orderDetail) {
+        console.log("Got Order Detail");
+        
+        const orderId = urlParams.get('orderId');
+        console.log(orderId+":orderId");
+        
+        async function fetchAndRenderOrderDetail(orderId) {
+            if (!token) {
+
+                showModal('Please login to view your order.');
+                window.location.href = '/account.html?tab=signin';
+                return;
+            }
+
+            try {
+                const res = await fetch(`${CONFIG.BASE_URL}/api/user/order-detail`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ orderId })
+                });
+
+                if (!res.ok) {
+                    if (res.status === 401) {
+                        showModal('Session expired. Please log in again.');
+                        //toggleAuthButtons(false);
+                        localStorage.removeItem('token');
+
+                        localStorage.removeItem("redirectAfterLogin");
+                        window.location.href = '/account.html?tab=signin';
+                        return;
+                    } else {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                }
+
+                const data = await res.json();
+                if (data) console.log(data);
+                // renderOrderDetail(data);
+            } catch (error) {
+                console.error('Error fetching order:', error);
+                showModal('Failed to load order. Please log in again.');
+                localStorage.removeItem('token'); // Clear invalid token
+                localStorage.removeItem("redirectAfterLogin");
+                window.location.href = '/account.html?tab=signin';
+            }
+        }
+        fetchAndRenderOrderDetail(orderId);
+
+    }
+
+
 
 });

@@ -491,278 +491,397 @@
             }
         }
 
+        /* --- Order Detail Page Specific Styles --- */
 
-        /* Base styles for the main container */
-        .main-container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 80px auto 40px auto;
-            padding: 20px;
+        .orderdetailcontainer {
+            flex-grow: 1;
+            /* Allows main content to take up available space */
+            padding: 30px 20px;
+            /* Adjusted padding */
+            margin-top: 80px;
+            /* Space for fixed header */
+            margin-bottom: 20px;
+            /* Space before footer */
             background-color: var(--background-color);
+            /* Use background-color for the container itself */
             font-family: var(--body-font);
             color: var(--text-color);
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            width: calc(100% - 40px);
+            /* 20px margin on each side */
+        }
+
+        /* Dark mode adjustments for order detail container */
+        body.dark-mode .orderdetailcontainer {
+            background-color: var(--background-color);
+            /* Same as body background */
         }
 
 
-        .main-container h1 {
-            font-family: var(--heading-font);
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--background-color);
-            font-size: 2.2em;
-        }
-
-        /* Styles for the list of orders */
-        .orders-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            justify-content: center;
-            /* Center cards in row */
-        }
-
-
-        /* Styles for individual order cards */
-        .order-card {
-            flex: 1 1 300px;
-            /* Allows responsive wrapping */
-            max-width: 350px;
+        .order-detail-summary,
+        .shipping-info,
+        .ordered-items,
+        .payment-details {
             background-color: var(--surface-color);
             padding: 25px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 30px;
+            border: 1px solid var(--background-color);
+            /* Subtle border */
         }
 
-
-        .order-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+        body.dark-mode .order-detail-summary,
+        body.dark-mode .shipping-info,
+        body.dark-mode .ordered-items,
+        body.dark-mode .payment-details {
+            background-color: var(--surface-color);
+            border-color: #555;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.05);
         }
 
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed var(--background-color);
-        }
-
-        .order-header h3 {
-            font-family: var(--body-font);
-            /* Using body font for order ID */
+        .order-detail-summary h1,
+        .shipping-info h2,
+        .ordered-items h2,
+        .payment-details h2 {
+            font-family: var(--heading-font);
             color: var(--primary-color);
-            margin: 0;
-            font-size: 1.2em;
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--background-color);
+            font-size: 2em;
         }
 
-        .order-date {
-            font-size: 0.9em;
-            color: #666;
+        /* Dark mode headings */
+        body.dark-mode .order-detail-summary h1,
+        body.dark-mode .shipping-info h2,
+        body.dark-mode .ordered-items h2,
+        body.dark-mode .payment-details h2 {
+            color: var(--primary-color);
+            /* Lighter primary color in dark mode */
+            border-color: #555;
         }
 
-        .order-details-grid {
+
+        /* Summary Grid */
+        .summary-grid,
+        .payment-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            /* Two columns for details */
-            gap: 10px 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
             margin-bottom: 20px;
         }
 
-        .detail-item strong {
+        .summary-item,
+        .payment-item {
+            padding: 15px;
+            background-color: var(--background-color);
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+            font-size: 1.05em;
+            color: var(--text-color);
+        }
+
+        body.dark-mode .summary-item,
+        body.dark-mode .payment-item {
+            background-color: #4a4a4a;
+            /* Darker background for items */
+            border-color: #666;
+            color: var(--text-color);
+        }
+
+        .summary-item strong,
+        .payment-item strong {
             color: var(--primary-color);
+            display: block;
+            /* Ensures label is on its own line */
+            margin-bottom: 5px;
+            font-weight: 600;
+            /* Slightly bolder labels */
         }
 
-        .order-total-price {
-            font-weight: bold;
-            color: var(--secondary-color);
-            /* Highlight total price */
-            font-size: 1.1em;
+        body.dark-mode .summary-item strong,
+        body.dark-mode .payment-item strong {
+            color: var(--primary-color);
+            /* Lighter primary color in dark mode */
         }
 
-        .order-status {
+
+        .status {
             font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.85em;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
             text-transform: uppercase;
         }
 
-        .order-status.delivered {
+        /* Status colors (reusing existing from previous CSS) */
+        .status.delivered {
             background-color: #d4edda;
-            /* Light green */
             color: #155724;
-            /* Dark green */
         }
 
-        .order-status.processing {
+        body.dark-mode .status.delivered {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .status.processing {
             background-color: #fff3cd;
-            /* Light yellow */
             color: #856404;
-            /* Dark yellow */
         }
 
-        .order-status.cancelled {
+        body.dark-mode .status.processing {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .status.cancelled {
             background-color: #f8d7da;
-            /* Light red */
             color: #721c24;
-            /* Dark red */
         }
 
-        .order-items-preview {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            /* Enable horizontal scrolling if too many items */
-            padding-bottom: 5px;
-            /* Space for scrollbar */
+        body.dark-mode .status.cancelled {
+            background-color: #dc3545;
+            color: #fff;
         }
 
-        .item-preview {
+        .price {
+            font-weight: bold;
+            color: var(--secondary-color);
+            font-size: 1.2em;
+        }
+
+        body.dark-mode .price {
+            color: var(--secondary-color);
+            /* Adjust if you need a different secondary for dark mode */
+        }
+
+        .track-order-btn {
+            display: block;
+            width: fit-content;
+            /* Adjusts to content width */
+            margin: 20px auto 0 auto;
+            /* Centers the button below the grid */
+            padding: 12px 30px;
+            font-size: 1.1em;
+        }
+
+        /* Shipping Info */
+        .address-card {
+            background-color: var(--background-color);
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+            line-height: 1.8;
+        }
+
+        body.dark-mode .address-card {
+            background-color: #4a4a4a;
+            border-color: #666;
+        }
+
+        .address-card p {
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .address-card strong {
+            color: var(--primary-color);
+        }
+
+        body.dark-mode .address-card strong {
+            color: var(--primary-color);
+        }
+
+
+        /* Ordered Items List */
+        .items-list {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
-            min-width: 70px;
-            /* Minimum width for each item preview */
+            gap: 20px;
         }
 
-        .item-preview img {
-            width: 60px;
-            height: 60px;
+        .order-item-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: var(--background-color);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        body.dark-mode .order-item-card {
+            background-color: #4a4a4a;
+            border-color: #666;
+        }
+
+        .order-item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .order-item-card img {
+            width: 100px;
+            height: 100px;
             object-fit: cover;
-            border-radius: 4px;
-            border: 1px solid var(--background-color);
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        body.dark-mode .order-item-card img {
+            border-color: #777;
+        }
+
+        .item-details {
+            flex-grow: 1;
+        }
+
+        .item-details h3 {
+            font-family: var(--body-font);
+            font-weight: 600;
+            font-size: 1.15em;
+            color: var(--primary-color);
             margin-bottom: 5px;
         }
 
-        .item-preview p {
-            margin: 0;
-            font-size: 0.75em;
-            color: #555;
+        body.dark-mode .item-details h3 {
+            color: var(--primary-color);
+        }
+
+        .item-details p {
+            font-size: 0.95em;
+            margin-bottom: 3px;
+            color: var(--text-color);
+        }
+
+        .item-details p span {
+            font-weight: 500;
+        }
+
+        .item-action-btn {
+            padding: 8px 15px;
+            font-size: 0.9em;
             white-space: nowrap;
-            /* Prevent wrapping */
-            overflow: hidden;
-            text-overflow: ellipsis;
-            /* Add ellipsis if text is too long */
-            max-width: 60px;
-            /* Match image width */
+            /* Prevent button text from wrapping */
         }
 
-        /* Button styling - using the primary-button class */
-        .view-details-button {
-            width: 100%;
-            /* Make button full width of card */
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        /* Payment Details */
+        .payment-item.total {
+            font-size: 1.2em;
+            font-weight: bold;
+            border: 2px solid var(--primary-color);
+            /* Highlight total */
+            background-color: var(--background-color);
+            /* Match summary item bg */
+        }
+
+        body.dark-mode .payment-item.total {
+            border-color: var(--primary-color);
+            background-color: #4a4a4a;
+        }
+
+        .payment-item.total .price {
+            font-size: 1.3em;
+            color: var(--secondary-color);
+        }
+
+        .invoice-link {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .invoice-link .btn-secondary {
+            padding: 10px 25px;
             font-size: 1em;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            margin-top: auto;
-            /* Pushes button to the bottom of the flex container */
-        }
-
-        .primary-button {
-            /* Reusing your primary-button styles */
-            background-color: var(--primary-color);
-            color: var(--surface-color);
-        }
-
-        .primary-button:hover {
-            background-color: #3b5a7b;
         }
 
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .main-container {
-                margin: 10px;
-                margin-top: 80px;
-                padding: 20px;
+        /* --- Responsive Design for Order Detail Page --- */
+
+        @media (max-width: 767px) {
+            .orderdetailcontainer {
+                padding: 20px 15px;
+                margin-top: 70px;
+                /* Slightly less margin for smaller headers */
+                width: calc(100% - 30px);
             }
 
-            .main-container h1 {
-                font-size: 1.8em;
+            .order-detail-summary h1,
+            .shipping-info h2,
+            .ordered-items h2,
+            .payment-details h2 {
+                font-size: 1.6em;
                 margin-bottom: 20px;
             }
 
-            .orders-list {
+            .summary-grid,
+            .payment-grid {
                 grid-template-columns: 1fr;
-                /* Stack cards on smaller screens */
+                /* Stack on small screens */
+                gap: 15px;
             }
 
-            .order-card {
-                padding: 20px;
+            .track-order-btn {
+                width: 100%;
+                padding: 10px 20px;
+                font-size: 1em;
             }
 
-            .order-header {
+            .order-item-card {
                 flex-direction: column;
+                /* Stack image and details */
                 align-items: flex-start;
-                gap: 5px;
+                text-align: left;
+                padding: 10px;
+                gap: 10px;
             }
 
-            .order-header h3 {
-                font-size: 1.1em;
+            .order-item-card img {
+                width: 80px;
+                height: 80px;
             }
 
-            .order-details-grid {
-                grid-template-columns: 1fr;
-                /* Stack details vertically */
-                gap: 8px;
+            .item-details h3 {
+                font-size: 1em;
             }
 
-            .order-items-preview {
-                justify-content: center;
-                /* Center items if few */
+            .item-details p {
+                font-size: 0.9em;
             }
 
-            .item-preview {
-                min-width: 60px;
-            }
-
-            .item-preview img {
-                width: 50px;
-                height: 50px;
-            }
-
-            .item-preview p {
-                font-size: 0.7em;
-                max-width: 50px;
+            .item-action-btn {
+                width: 100%;
+                /* Make action button full width */
+                margin-top: 10px;
             }
         }
 
         @media (max-width: 480px) {
-            .main-container {
-                padding: 8px;
+            .orderdetailcontainer {
+                padding: 15px 10px;
+                width: calc(100% - 20px);
             }
 
-            .main-container h1 {
-                font-size: 1.5em;
+            .order-detail-summary,
+            .shipping-info,
+            .ordered-items,
+            .payment-details {
+                padding: 15px;
+                margin-bottom: 20px;
             }
 
-            .order-card {
-                flex: 1 1 90%;
-                max-width: 95%;
-                padding: 16px;
-            }
-
-            .order-header h3 {
-                font-size: 1em;
-            }
-
-            .view-details-button {
-                padding: 10px 15px;
-                font-size: 0.9em;
+            .order-detail-summary h1,
+            .shipping-info h2,
+            .ordered-items h2,
+            .payment-details h2 {
+                font-size: 1.4em;
+                margin-bottom: 15px;
             }
         }
     </style>
@@ -781,7 +900,7 @@
                 <li><a href="Order.html">My Orders</a></li>
                 <li><a href="index.html#about">About</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
-                <!-- Removed li.user-actions-mobile from here to avoid duplication and simplify structure -->
+
             </ul>
 
             <div class="user-actions-desktop">
@@ -818,7 +937,7 @@
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="products.html">Products</a></li>
-                    <li><a href="Order.html">My Orders</a></li>
+                    <li><a href="index.html#gallery">Gallery</a></li>
                     <li><a href="index.html#about">About</a></li>
                     <li><a href="index.html#contact">Contact</a></li>
                 </ul>
@@ -832,17 +951,84 @@
         </div>
     </header>
 
-    <main class="main-container">
-        <h1>My Orders</h1>
+    <main class="orderdetailcontainer">
+        <section class="order-detail-summary">
+            <h1>Order Details: <span id="orderIdDisplay">#OD123456789</span></h1>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <strong>Order Date:</strong> <span id="orderDate">June 26, 2025</span>
+                </div>
+                <div class="summary-item">
+                    <strong>Status:</strong> <span id="orderStatus" class="status processing">Processing</span>
+                </div>
+                <div class="summary-item">
+                    <strong>Total Amount:</strong> <span id="orderTotal" class="price">₹1,599.00</span>
+                </div>
+                <div class="summary-item">
+                    <strong>Payment Method:</strong> <span id="paymentMethod">Credit Card</span>
+                </div>
+            </div>
+            <button class="btn-primary track-order-btn">Track Order</button>
+        </section>
 
-        <div class="orders-list" id="orders-list">
-            <section class="order-card">
-                <h2> Orders Loading .... </h2>
-                <h4>(Kindly Login again to load your orders.) </h4>
-            </section>
+        <section class="shipping-info">
+            <h2>Shipping Information</h2>
+            <div class="address-card">
+                <p><strong>Shipping Address:</strong></p>
+                <p id="shippingName">John Doe</p>
+                <p id="shippingAddressLine1">123, Sample Street</p>
+                <p id="shippingAddressLine2">Near Central Park</p>
+                <p id="shippingCityStateZip">New Delhi, Delhi 110001</p>
+                <p id="shippingPhone">Phone: +91 98765 43210</p>
+            </div>
+        </section>
 
+        <section class="ordered-items">
+            <h2>Items in Your Order</h2>
+            <div class="items-list">
+                <div class="order-item-card">
+                    <img src="https://via.placeholder.com/100" alt="Product Image 1">
+                    <div class="item-details">
+                        <h3>Premium Wireless Headphones</h3>
+                        <p>Quantity: <span class="item-qty">1</span></p>
+                        <p>Price: <span class="item-price">₹999.00</span></p>
+                        <p>Seller: Electronics Hub</p>
+                    </div>
+                    <button class="btn-secondary item-action-btn">Return/Exchange</button>
+                </div>
+                <div class="order-item-card">
+                    <img src="https://via.placeholder.com/100" alt="Product Image 2">
+                    <div class="item-details">
+                        <h3>Smartwatch Series 5</h3>
+                        <p>Quantity: <span class="item-qty">1</span></p>
+                        <p>Price: <span class="item-price">₹600.00</span></p>
+                        <p>Seller: Wearable Tech Co.</p>
+                    </div>
+                    <button class="btn-secondary item-action-btn">Return/Exchange</button>
+                </div>
+            </div>
+        </section>
 
-        </div>
+        <section class="payment-details">
+            <h2>Payment Details</h2>
+            <div class="payment-grid">
+                <div class="payment-item">
+                    <strong>Subtotal:</strong> <span id="subtotalPrice">₹1,599.00</span>
+                </div>
+                <div class="payment-item">
+                    <strong>Shipping:</strong> <span id="shippingCost">₹50.00</span>
+                </div>
+                <div class="payment-item">
+                    <strong>Discount:</strong> <span id="discountAmount">- ₹50.00</span>
+                </div>
+                <div class="payment-item total">
+                    <strong>Grand Total:</strong> <span id="grandTotalPrice" class="price">₹1,599.00</span>
+                </div>
+            </div>
+            <p class="invoice-link">
+                <a href="#" class="btn-secondary">Download Invoice</a>
+            </p>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -968,65 +1154,10 @@
                 });
             });
 
-            // --- Authentication Button Toggling ---
-            function toggleAuthButtons(isLoggedIn) {
-                const signinDesktop = document.getElementById('signin-btn-desktop');
-                const logoutDesktop = document.getElementById('logout-btn-desktop');
-                const registerDesktop = document.getElementById('register-btn-desktop');
+            
 
-                const signinMobile = document.getElementById('signin-btn-mobile');
-                const logoutMobile = document.getElementById('logout-btn-mobile');
-                const registerMobile = document.getElementById('register-btn-mobile');
 
-                if (isLoggedIn) {
-                    if (signinDesktop) signinDesktop.style.display = 'none';
-                    if (registerDesktop) registerDesktop.style.display = 'none';
-                    if (logoutDesktop) logoutDesktop.style.display = 'block';
-
-                    if (signinMobile) signinMobile.style.display = 'none';
-                    if (registerMobile) registerMobile.style.display = 'none';
-                    if (logoutMobile) logoutMobile.style.display = 'block';
-                } else {
-                    if (signinDesktop) signinDesktop.style.display = 'block';
-                    if (registerDesktop) registerDesktop.style.display = 'block';
-                    if (logoutDesktop) logoutDesktop.style.display = 'none';
-
-                    if (signinMobile) signinMobile.style.display = 'block';
-                    if (registerMobile) registerMobile.style.display = 'block';
-                    if (logoutMobile) logoutMobile.style.display = 'none';
-                }
-            }
-
-            // Logout functionality
-            const logoutBtnDesktop = document.getElementById('logout-btn-desktop');
-            const logoutBtnMobile = document.getElementById('logout-btn-mobile');
-
-            if (logoutBtnDesktop) {
-                logoutBtnDesktop.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    localStorage.removeItem('token');
-                    showModal('You have been logged out!');
-                    toggleAuthButtons(false);
-                    // Optionally, clear cart or redirect
-                    cartItems = [];
-                    renderCart();
-                });
-            }
-            if (logoutBtnMobile) {
-                logoutBtnMobile.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    localStorage.removeItem('token');
-                    showModal('You have been logged out!');
-                    toggleAuthButtons(false);
-                    // Optionally, clear cart or redirect
-                    cartItems = [];
-                    renderCart();
-                });
-            }
         });
-        function viewOrder(orderId) {
-            window.location.href = `order-detail.html?orderId=${orderId}`;
-        }
 
     </script>
 

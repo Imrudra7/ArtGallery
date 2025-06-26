@@ -14,9 +14,12 @@ function verifyToken(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded; // Attach to req for later use
+        req.user = decoded; 
+        console.log("Token verified : next");
+        
         next();
     } catch (err) {
+        console.error("❌ Token verification failed:", err);
         return res.status(403).json({ message: 'Invalid or expired token.', err });
     }
 }
