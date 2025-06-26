@@ -404,11 +404,11 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchAndRenderOrders();
     }
     const orderDetail = document.getElementsByClassName('orderdetailcontainer');
-   
+
 
     if (orderDetail) {
         const orderId = urlParams.get('orderId');
-        
+
         function renderOrderDetail(data) {
             const statusClass = statusClassMap[data.status] || '';
 
@@ -495,7 +495,42 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
         fetchAndRenderOrderDetail(orderId);
+        const donwloadInvoice = document.getElementById("donwloadInvoice");
+        if (donwloadInvoice) {
+            donwloadInvoice.addEventListener('click', async (e) => {
+                e.preventDefault();
 
+                try {
+                    const res = await fetch(`${CONFIG.BASE_URL}/api/downloadPDF/generateInvoice`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ orderId })
+                    });
+
+                    if (!res.ok) {
+                        throw new Error('Failed to generate invoice');
+                    }
+
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+
+                    // 🔽 Trigger download
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `invoice-${orderId}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                } catch (error) {
+                    console.error("❌ Error downloading invoice:", error.message);
+                    alert("Invoice download failed.");
+                }
+            });
+        }
     }
 
 

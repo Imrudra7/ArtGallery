@@ -14,7 +14,7 @@ const productRoutes = require('./routes/product');
 const accountRoutes = require('./routes/account');
 const cartRoutes = require('./routes/cartRoutes');
 const userRoutes = require('./routes/userRoutes');
-
+const pdfRoutes = require ('./routes/pdfRoute');
 
 
 
@@ -23,7 +23,7 @@ app.use('/api', productRoutes);
 app.use('/api/account', accountRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/user', userRoutes);
-
+app.use('/api/downloadPDF', pdfRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is live');
