@@ -307,7 +307,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (res.ok) {
                     alert(`✅ Order Placed sucessfull with order id : ${orderId}`);
                     try {
-                        const mailRes = await fetch(`${env.BASE_URL}/api/send-invoice`, {
+                        const mailRes = await fetch(`${env.BASE_URL}/api/mail/send-invoice`, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",

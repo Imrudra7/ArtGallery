@@ -1300,7 +1300,7 @@
                             if (res.ok) {
                                 showModal(`✅ Order Placed sucessfull with order id : ${orderId}`);
                                 try {
-                                    const mailRes = await fetch(`${CONFIG.BASE_URL}/api/send-invoice`, {
+                                    const mailRes = await fetch(`${CONFIG.BASE_URL}/api/mail/send-invoice`, {
                                         method: "POST",
                                         headers: {
                                             "Content-Type": "application/json",
