@@ -26,5 +26,18 @@ const showcart = async (req, res) => {
     }
 };
 
+const clearCart = async (req, res) => {
+    const userId = req.user.id;
 
-module.exports = showcart;
+    try {
+        await pool.query(`DELETE FROM cart_items WHERE cart_id = (SELECT id FROM cart WHERE user_id = $1)`, [userId]);
+        await pool.query(`DELETE FROM cart WHERE user_id = $1`, [userId]);
+
+        res.status(200).json({ message: "Cart cleared successfully" });
+    } catch (err) {
+        console.error("❌ Error clearing cart:", err);
+        res.status(500).json({ message: "Failed to clear cart" });
+    }
+};
+
+module.exports = { showcart, clearCart };

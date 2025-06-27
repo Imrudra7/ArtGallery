@@ -1268,7 +1268,7 @@
             fetchCartFromBackend();
             const checkoutBtn = document.getElementById('checkout-btn');
             if (checkoutBtn) {
-                console.log(cartItems);
+                //console.log(cartItems);
 
                 // Checkout button functionality
                 checkoutBtn.addEventListener('click', async (e) => {
@@ -1298,7 +1298,29 @@
                             const result = await res.json();
                             const orderId = result.order_id;
                             if (res.ok) {
-                                showModal(`✅ Order Placed sucessfull with order id : ${orderId}`);
+                                 showModal(`✅ Order Placed sucessfull with order id : ${orderId}`);                               
+
+                                try {
+                                   const deleteCart =  await fetch(`${CONFIG.BASE_URL}/api/cart/clearCart`, {
+                                        method: "DELETE",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            "Authorization": `Bearer ${token}`
+                                        }
+                                    });
+                                    const deleteCartResult = deleteCart.json();
+                                    if(deleteCart.ok) {
+                                        console.log(deleteCartResult.message);
+                                        
+                                    }else {
+                                        console.log(deleteCartResult.message);                                        
+                                    }
+                                } catch (err) {
+                                    console.log('Error in clearing cart : ', err);
+                                }
+                                cartItems = [];
+                                renderCart();
+
                                 try {
                                     const mailRes = await fetch(`${CONFIG.BASE_URL}/api/mail/send-invoice`, {
                                         method: "POST",
@@ -1314,10 +1336,14 @@
                                     } else {
                                         console.warn("❌ Invoice email failed");
                                     }
-
+                                    // ⏳ Auto redirect after 3 seconds
+                                    setTimeout(() => {
+                                        window.location.href = `order-detail.html?orderId=${orderId}`
+                                    }, 2500);
                                 } catch (err) {
                                     console.error("💥 Error while sending invoice email:", err);
                                 }
+
                             } else {
                                 showModal("❌ Order could not be placed!!" + result.message);
                             }

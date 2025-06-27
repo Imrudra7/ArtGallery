@@ -40,9 +40,9 @@ const loadOrderDetail = async (req, res) => {
     const { orderId } = req.body;
     console.log("LoadOrdder: " + orderId);
 
-    if (!orderId){
+    if (!orderId) {
         console.log("not order Id");
-        
+
         return res.status(404).json({ message: 'orderId invalid' });
     }
     try {

@@ -325,6 +325,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     } catch (err) {
                         console.error("💥 Error while sending invoice email:", err);
                     }
+                    setTimeout(() => {
+                        window.location.href = `order-detail.html?orderId=${orderId}`
+                    }, 2500);
                 } else {
                     alert("❌ Order could not be placed!!" + result.message);
                 }
