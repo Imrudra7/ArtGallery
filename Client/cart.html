@@ -847,7 +847,7 @@
                 <li><a href="products.html">Products</a></li>
                 <li><a href="Order.html">My Orders</a></li>
                 <li><a href="index.html#about">About</a></li>
-                <li><a href="index.html#contact">Contact</a></li>                
+                <li><a href="index.html#contact">Contact</a></li>
             </ul>
 
             <div class="user-actions-desktop">
@@ -994,7 +994,7 @@
             let cartItems = [];
 
             async function fetchCartFromBackend() {
-                
+
 
                 if (!token) {
                     // Show sign-in/register buttons if not logged in
@@ -1269,7 +1269,7 @@
             const checkoutBtn = document.getElementById('checkout-btn');
             if (checkoutBtn) {
                 console.log(cartItems);
-                
+
                 // Checkout button functionality
                 checkoutBtn.addEventListener('click', async (e) => {
                     e.preventDefault();
@@ -1299,6 +1299,25 @@
                             const orderId = result.order_id;
                             if (res.ok) {
                                 showModal(`✅ Order Placed sucessfull with order id : ${orderId}`);
+                                try {
+                                    const mailRes = await fetch(`${CONFIG.BASE_URL}/api/send-invoice`, {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            Authorization: `Bearer ${token}`
+                                        },
+                                        body: JSON.stringify({ orderId })
+                                    });
+
+                                    if (mailRes.ok) {
+                                        console.log("📧 Invoice sent successfully");
+                                    } else {
+                                        console.warn("❌ Invoice email failed");
+                                    }
+
+                                } catch (err) {
+                                    console.error("💥 Error while sending invoice email:", err);
+                                }
                             } else {
                                 showModal("❌ Order could not be placed!!" + result.message);
                             }
@@ -1313,8 +1332,8 @@
             }
         });
     </script>
-    
-    
+
+
     <script src="mainscript.js"></script>
 </body>
 

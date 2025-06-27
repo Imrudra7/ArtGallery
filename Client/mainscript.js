@@ -306,6 +306,25 @@ document.addEventListener("DOMContentLoaded", function () {
                 const orderId = result.order_id;
                 if (res.ok) {
                     alert(`✅ Order Placed sucessfull with order id : ${orderId}`);
+                    try {
+                        const mailRes = await fetch(`${env.BASE_URL}/api/send-invoice`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ orderId })
+                        });
+
+                        if (mailRes.ok) {
+                            console.log("📧 Invoice sent successfully");
+                        } else {
+                            console.warn("❌ Invoice email failed");
+                        }
+
+                    } catch (err) {
+                        console.error("💥 Error while sending invoice email:", err);
+                    }
                 } else {
                     alert("❌ Order could not be placed!!" + result.message);
                 }
