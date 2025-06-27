@@ -179,8 +179,8 @@ function createInvoice(doc, order) {
     doc.font('Helvetica-Bold')
         .strokeColor('#2c3e50')
         .lineWidth(2)
-        .moveTo(totalLabelStartX, summaryY + 5)
-        .lineTo(totalValueEndX + 5, summaryY + 5)
+        .moveTo(totalLabelStartX+20, summaryY + 5)
+        .lineTo(totalValueEndX + 70, summaryY + 5)
         .stroke();
     summaryY += 10;
 
