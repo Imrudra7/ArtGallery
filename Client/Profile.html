@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Orders: My Art Gallery</title>
+    <title>My Profile: My Art Gallery</title>
     <!-- Font Awesome for icons (hamburger, plus, minus, trash, shopping cart) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <style>
         /* Define your color variables using CSS custom properties */
         :root {
@@ -491,230 +492,360 @@
             }
         }
 
-        /* --- Order Detail Page Specific Styles --- */
+        /* --- Profile Page Specific Styles --- */
 
-        .orderdetailcontainer {
-            flex-grow: 1;
-            /* Allows main content to take up available space */
+        .profile-container {
+            display: flex;
+            flex-direction: row;
+            /* Sidebar and content side-by-side */
+            gap: 30px;
+            /* Space between sidebar and content */
             padding: 30px 20px;
-            /* Adjusted padding */
             margin-top: 80px;
             /* Space for fixed header */
             margin-bottom: 20px;
             /* Space before footer */
-            background-color: var(--background-color);
-            /* Use background-color for the container itself */
-            font-family: var(--body-font);
-            color: var(--text-color);
             max-width: 1200px;
             margin-left: auto;
             margin-right: auto;
             width: calc(100% - 40px);
             /* 20px margin on each side */
+            font-family: var(--body-font);
+            color: var(--text-color);
         }
 
-        /* Dark mode adjustments for order detail container */
-        body.dark-mode .orderdetailcontainer {
+        /* Dark mode for main container */
+        body.dark-mode .profile-container {
             background-color: var(--background-color);
-            /* Same as body background */
+            /* Matches body background */
         }
 
-
-        .order-detail-summary,
-        .shipping-info,
-        .ordered-items,
-        .payment-details {
+        /* --- Profile Sidebar --- */
+        .profile-sidebar {
+            flex: 0 0 250px;
+            /* Fixed width for sidebar */
             background-color: var(--surface-color);
             padding: 25px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
             border: 1px solid var(--background-color);
             /* Subtle border */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Center avatar and nav */
         }
 
-        body.dark-mode .order-detail-summary,
-        body.dark-mode .shipping-info,
-        body.dark-mode .ordered-items,
-        body.dark-mode .payment-details {
+        body.dark-mode .profile-sidebar {
             background-color: var(--surface-color);
             border-color: #555;
             box-shadow: 0 4px 8px rgba(255, 255, 255, 0.05);
         }
 
-        .order-detail-summary h1,
-        .shipping-info h2,
-        .ordered-items h2,
-        .payment-details h2 {
+        .profile-avatar-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--background-color);
+            width: 100%;
+        }
+
+        body.dark-mode .profile-avatar-section {
+            border-color: #4a4a4a;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        body.dark-mode .profile-avatar {
+            border-color: var(--primary-color);
+        }
+
+        .profile-avatar-section h2 {
+            font-family: var(--heading-font);
+            font-size: 1.6em;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        body.dark-mode .profile-avatar-section h2 {
+            color: var(--primary-color);
+        }
+
+        .profile-avatar-section p {
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        /* Profile Navigation */
+        .profile-nav {
+            width: 100%;
+        }
+
+        .profile-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .profile-nav ul li {
+            margin-bottom: 10px;
+        }
+
+        .profile-nav ul li a {
+            display: block;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .profile-nav ul li a:hover,
+        .profile-nav ul li a.active {
+            background-color: var(--primary-color);
+            color: var(--surface-color);
+            /* White text on primary background */
+        }
+
+        body.dark-mode .profile-nav ul li a:hover,
+        body.dark-mode .profile-nav ul li a.active {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            /* Light text on primary background in dark mode */
+        }
+
+        .profile-nav .logout-btn {
+            background-color: var(--secondary-color);
+            color: var(--surface-color);
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .profile-nav .logout-btn:hover {
+            background-color: darken(var(--secondary-color), 10%);
+            /* Pseudo-code, use actual darken function or color */
+            opacity: 0.9;
+        }
+
+        body.dark-mode .profile-nav .logout-btn {
+            background-color: var(--secondary-color);
+            /* Retain secondary color */
+            color: var(--surface-color);
+        }
+
+
+        /* --- Profile Content Area --- */
+        .profile-content {
+            flex: 1;
+            /* Takes up remaining space */
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .profile-section {
+            background-color: var(--surface-color);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--background-color);
+            display: none;
+            /* Hidden by default, JavaScript will show active one */
+        }
+
+        .profile-section.active {
+            display: block;
+            /* Show the active section */
+        }
+
+        body.dark-mode .profile-section {
+            background-color: var(--surface-color);
+            border-color: #555;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.05);
+        }
+
+        .profile-section h2 {
             font-family: var(--heading-font);
             color: var(--primary-color);
-            text-align: center;
             margin-bottom: 25px;
             padding-bottom: 10px;
             border-bottom: 2px solid var(--background-color);
             font-size: 2em;
+            text-align: center;
+            /* Center section headings */
         }
 
-        /* Dark mode headings */
-        body.dark-mode .order-detail-summary h1,
-        body.dark-mode .shipping-info h2,
-        body.dark-mode .ordered-items h2,
-        body.dark-mode .payment-details h2 {
+        body.dark-mode .profile-section h2 {
             color: var(--primary-color);
-            /* Lighter primary color in dark mode */
             border-color: #555;
         }
 
-
-        /* Summary Grid */
-        .summary-grid,
-        .payment-grid {
+        /* Profile Info Grid (Overview) */
+        .profile-info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             margin-bottom: 20px;
         }
 
-        .summary-item,
-        .payment-item {
+        .info-item {
             padding: 15px;
             background-color: var(--background-color);
             border-radius: 5px;
             border: 1px solid #e0e0e0;
-            font-size: 1.05em;
+            font-size: 1em;
             color: var(--text-color);
         }
 
-        body.dark-mode .summary-item,
-        body.dark-mode .payment-item {
+        body.dark-mode .info-item {
             background-color: #4a4a4a;
-            /* Darker background for items */
             border-color: #666;
             color: var(--text-color);
         }
 
-        .summary-item strong,
-        .payment-item strong {
+        .info-item strong {
             color: var(--primary-color);
             display: block;
-            /* Ensures label is on its own line */
             margin-bottom: 5px;
             font-weight: 600;
-            /* Slightly bolder labels */
         }
 
-        body.dark-mode .summary-item strong,
-        body.dark-mode .payment-item strong {
+        body.dark-mode .info-item strong {
             color: var(--primary-color);
-            /* Lighter primary color in dark mode */
         }
 
+        .edit-profile-btn {
+            display: block;
+            margin: 20px auto 0 auto;
+            /* Center button */
+            padding: 10px 25px;
+            font-size: 1em;
+        }
 
-        .status {
+        /* Order History List */
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .order-card {
+            background-color: var(--background-color);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        body.dark-mode .order-card {
+            background-color: #4a4a4a;
+            border-color: #666;
+        }
+
+        .order-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .order-header h3 {
+            font-size: 1.1em;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        body.dark-mode .order-header h3 {
+            color: var(--primary-color);
+        }
+
+        /* Status Badges (Reusing from previous CSS if available) */
+        .order-status {
             font-weight: bold;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.9em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
             text-transform: uppercase;
         }
 
-        /* Status colors (reusing existing from previous CSS) */
-        .status.delivered {
+        .order-status.delivered {
             background-color: #d4edda;
-            /* Light green */
             color: #155724;
-            /* Dark green */
         }
 
-        body.dark-mode .status.delivered {
-            background-color: #6fff9179;
+        body.dark-mode .order-status.delivered {
+            background-color: #28a745;
             color: #fff;
         }
 
-        .status.processing {
+        .order-status.processing {
             background-color: #fff3cd;
-            /* Light yellow */
             color: #856404;
-            /* Dark yellow */
         }
 
-        body.dark-mode .status.processing {
-            background-color: #edf59e;
-            color: #6b5050;
+        body.dark-mode .order-status.processing {
+            background-color: #ffc107;
+            color: #333;
         }
 
-        .status.cancelled {
+        .order-status.cancelled {
             background-color: #f8d7da;
-            /* Light red */
             color: #721c24;
-            /* Dark red */
         }
 
-        body.dark-mode .status.cancelled {
+        body.dark-mode .order-status.cancelled {
             background-color: #dc3545;
             color: #fff;
         }
 
-        .price {
-            font-weight: bold;
-            color: var(--secondary-color);
-            font-size: 1.2em;
-        }
-
-        body.dark-mode .price {
-            color: var(--secondary-color);
-            /* Adjust if you need a different secondary for dark mode */
-        }
-
-        .track-order-btn {
-            display: block;
-            width: fit-content;
-            /* Adjusts to content width */
-            margin: 20px auto 0 auto;
-            /* Centers the button below the grid */
-            padding: 12px 30px;
-            font-size: 1.1em;
-        }
-
-        /* Shipping Info */
-        .address-card {
-            background-color: var(--background-color);
-            padding: 20px;
-            border-radius: 5px;
-            border: 1px solid #e0e0e0;
-            line-height: 1.8;
-        }
-
-        body.dark-mode .address-card {
-            background-color: #4a4a4a;
-            border-color: #666;
-        }
-
-        .address-card p {
+        .order-card p {
             margin: 0;
+            font-size: 0.9em;
             color: var(--text-color);
         }
 
-        .address-card strong {
-            color: var(--primary-color);
+        .order-card .view-details-btn {
+            align-self: flex-end;
+            /* Push button to the right */
+            padding: 8px 15px;
+            font-size: 0.9em;
         }
 
-        body.dark-mode .address-card strong {
-            color: var(--primary-color);
+        .load-more-btn {
+            display: block;
+            margin: 20px auto 0 auto;
+            padding: 10px 25px;
+            font-size: 1em;
         }
 
 
-        /* Ordered Items List */
-        .items-list {
+        /* Address Management List */
+        .addresses-list {
             display: flex;
             flex-direction: column;
             gap: 20px;
+            margin-bottom: 20px;
         }
 
-        .order-item-card {
-            display: flex;
-            align-items: center;
-            gap: 20px;
+        .address-card {
             background-color: var(--background-color);
             padding: 15px;
             border-radius: 8px;
@@ -722,172 +853,287 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        body.dark-mode .order-item-card {
+        body.dark-mode .address-card {
             background-color: #4a4a4a;
             border-color: #666;
         }
 
-        .order-item-card:hover {
+        .address-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
         }
 
-        .order-item-card img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-
-        body.dark-mode .order-item-card img {
-            border-color: #777;
-        }
-
-        .item-details {
-            flex-grow: 1;
-        }
-
-        .item-details h3 {
-            font-family: var(--body-font);
-            font-weight: 600;
-            font-size: 1.15em;
+        .address-card strong {
             color: var(--primary-color);
+            display: block;
             margin-bottom: 5px;
+            font-size: 1.1em;
         }
 
-        body.dark-mode .item-details h3 {
+        body.dark-mode .address-card strong {
             color: var(--primary-color);
         }
 
-        .item-details p {
+        .address-card p {
+            margin: 0;
             font-size: 0.95em;
-            margin-bottom: 3px;
+            line-height: 1.5;
             color: var(--text-color);
         }
 
-        .item-details p span {
-            font-weight: 500;
+        .address-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            /* Space between buttons */
+            justify-content: flex-end;
+            /* Push buttons to the right */
         }
 
-        .item-action-btn {
+        /* Reusing btn-tertiary and btn-danger from global styles if available */
+        .btn-tertiary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
             padding: 8px 15px;
-            font-size: 0.9em;
-            white-space: nowrap;
-            /* Prevent button text from wrapping */
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Payment Details */
-        .payment-item.total {
-            font-size: 1.2em;
-            font-weight: bold;
-            border: 2px solid var(--primary-color);
-            /* Highlight total */
-            background-color: var(--background-color);
-            /* Match summary item bg */
+        .btn-tertiary:hover {
+            background-color: var(--primary-color);
+            color: var(--surface-color);
         }
 
-        body.dark-mode .payment-item.total {
+        body.dark-mode .btn-tertiary {
+            color: var(--primary-color);
             border-color: var(--primary-color);
-            background-color: #4a4a4a;
         }
 
-        .payment-item.total .price {
-            font-size: 1.3em;
-            color: var(--secondary-color);
+        body.dark-mode .btn-tertiary:hover {
+            background-color: var(--primary-color);
+            color: var(--background-color);
         }
 
-        .invoice-link {
-            text-align: center;
-            margin-top: 25px;
+        .btn-danger {
+            background-color: var(--secondary-color);
+            color: var(--surface-color);
+            border: 1px solid var(--secondary-color);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
         }
 
-        .invoice-link .btn-secondary {
+        .btn-danger:hover {
+            background-color: darken(var(--secondary-color), 10%);
+            /* Pseudo-code */
+            opacity: 0.9;
+        }
+
+        body.dark-mode .btn-danger {
+            background-color: var(--secondary-color);
+            color: var(--surface-color);
+        }
+
+        .add-address-btn {
+            display: block;
+            margin: 20px auto 0 auto;
             padding: 10px 25px;
             font-size: 1em;
         }
 
+        /* Account Settings */
+        .settings-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
 
-        /* --- Responsive Design for Order Detail Page --- */
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
 
-        @media (max-width: 767px) {
-            .orderdetailcontainer {
-                padding: 20px 15px;
-                margin-top: 70px;
-                /* Slightly less margin for smaller headers */
+        body.dark-mode .form-group label {
+            color: var(--primary-color);
+        }
+
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box;
+            /* Include padding in width */
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        body.dark-mode .form-group input {
+            background-color: #555;
+            border-color: #777;
+            color: var(--text-color);
+        }
+
+        .save-settings-btn,
+        .deactivate-account-btn {
+            display: block;
+            width: fit-content;
+            margin: 0 auto;
+            /* Center buttons */
+            padding: 10px 25px;
+            font-size: 1em;
+        }
+
+        .deactivate-account-btn {
+            background-color: var(--secondary-color);
+            /* Danger color for deactivate */
+            border-color: var(--secondary-color);
+        }
+
+
+        /* --- Responsive Design --- */
+
+        @media (max-width: 991px) {
+            .profile-container {
+                flex-direction: column;
+                /* Stack sidebar and content on medium screens */
+                gap: 20px;
+                padding: 25px 15px;
                 width: calc(100% - 30px);
             }
 
-            .order-detail-summary h1,
-            .shipping-info h2,
-            .ordered-items h2,
-            .payment-details h2 {
-                font-size: 1.6em;
+            .profile-sidebar {
+                flex: none;
+                /* Remove fixed width */
+                width: 100%;
+                /* Full width */
+                order: 1;
+                /* Move sidebar to top */
+                padding: 20px;
+            }
+
+            .profile-avatar-section {
                 margin-bottom: 20px;
             }
 
-            .summary-grid,
-            .payment-grid {
-                grid-template-columns: 1fr;
-                /* Stack on small screens */
-                gap: 15px;
-            }
-
-            .track-order-btn {
-                width: 100%;
-                padding: 10px 20px;
-                font-size: 1em;
-            }
-
-            .order-item-card {
-                flex-direction: column;
-                /* Stack image and details */
-                align-items: flex-start;
-                text-align: left;
-                padding: 10px;
+            .profile-nav ul {
+                display: flex;
+                /* Make nav items horizontal */
+                flex-wrap: wrap;
+                /* Allow items to wrap */
+                justify-content: center;
                 gap: 10px;
+                /* Space between nav items */
             }
 
-            .order-item-card img {
-                width: 80px;
-                height: 80px;
+            .profile-nav ul li {
+                margin-bottom: 0;
             }
 
-            .item-details h3 {
-                font-size: 1em;
+            .profile-nav ul li a {
+                padding: 8px 12px;
+                font-size: 0.95em;
             }
 
-            .item-details p {
-                font-size: 0.9em;
-            }
-
-            .item-action-btn {
+            .profile-nav .logout-btn {
                 width: 100%;
-                /* Make action button full width */
-                margin-top: 10px;
+                /* Full width button */
+                margin-top: 15px;
+            }
+
+            .profile-content {
+                order: 2;
+                /* Content below sidebar */
+                gap: 20px;
+            }
+
+            .profile-section {
+                padding: 20px;
+            }
+
+            .profile-section h2 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+
+            .profile-info-grid {
+                grid-template-columns: 1fr;
+                /* Stack info items on smaller screens */
+                gap: 15px;
             }
         }
 
-        @media (max-width: 480px) {
-            .orderdetailcontainer {
-                padding: 15px 10px;
+        @media (max-width: 575px) {
+            .profile-container {
+                padding: 20px 10px;
                 width: calc(100% - 20px);
             }
 
-            .order-detail-summary,
-            .shipping-info,
-            .ordered-items,
-            .payment-details {
+            .profile-sidebar {
                 padding: 15px;
-                margin-bottom: 20px;
             }
 
-            .order-detail-summary h1,
-            .shipping-info h2,
-            .ordered-items h2,
-            .payment-details h2 {
+            .profile-avatar-section h2 {
                 font-size: 1.4em;
+            }
+
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+
+            .profile-nav ul {
+                flex-direction: column;
+                /* Stack nav items vertically again for very small screens */
+                align-items: center;
+            }
+
+            .profile-nav ul li a {
+                width: 100%;
+                /* Make nav links full width */
+                text-align: center;
+            }
+
+            .profile-section h2 {
+                font-size: 1.5em;
                 margin-bottom: 15px;
+            }
+
+            .order-header {
+                flex-direction: column;
+                /* Stack header elements */
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .order-card .view-details-btn {
+                align-self: stretch;
+                /* Make button full width */
+                text-align: center;
+            }
+
+            .address-actions {
+                flex-direction: column;
+                /* Stack address action buttons */
+                gap: 8px;
+            }
+
+            .btn-tertiary,
+            .btn-danger {
+                width: 100%;
+            }
+
+            .save-settings-btn,
+            .deactivate-account-btn {
+                width: 100%;
+                /* Make setting buttons full width */
             }
         }
     </style>
@@ -906,7 +1152,7 @@
                 <li><a href="Order.html">My Orders</a></li>
                 <li><a href="index.html#about">About</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
-
+                <!-- Removed li.user-actions-mobile from here to avoid duplication and simplify structure -->
             </ul>
 
             <div class="user-actions-desktop">
@@ -957,73 +1203,119 @@
         </div>
     </header>
 
-    <main class="orderdetailcontainer">
-        <section class="order-detail-summary">
-            <h1>Order Details: <span id="orderIdDisplay">#OD</span></h1>
-            <div class="summary-grid">
-                <div class="summary-item">
-                    <strong>Order Date:</strong> <span id="orderDate"></span>
-                </div>
-                <div class="summary-item">
-                    <strong>Status:</strong> <span id="orderStatus" class="status processing"></span>
-                </div>
-                <div class="summary-item">
-                    <strong>Total Amount:</strong> <span id="orderTotal" class="price">₹</span>
-                </div>
-                <div class="summary-item">
-                    <strong>Payment Method:</strong> <span id="paymentMethod"></span>
-                </div>
+    <!-- Main Content for My Profile Page -->
+    <main class="profile-container">
+        <aside class="profile-sidebar">
+            <div class="profile-avatar-section">
+                <img src="https://avatar.iran.liara.run/public" alt="User Avatar" class="profile-avatar">
+                <h2 id="userNameDisplay">John Doe</h2>
+                <p id="userEmailDisplay">john.doe@example.com</p>
             </div>
-            <button class="btn-primary track-order-btn">Track Order</button>
-        </section>
+            <nav class="profile-nav">
+                <ul>
+                    <li><a href="#profileOverview" class="active">Profile Overview</a></li>
+                    <li><a href="#orderHistory">Order History</a></li>
+                    <li><a href="#addressManagement">Addresses</a></li>
+                    <li><a href="#accountSettings">Account Settings</a></li>
+                    <li><a href="#" class="logout-btn">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
 
-        <section class="shipping-info">
-            <h2>Shipping Information</h2>
-            <div class="address-card">
-                <p><strong>Shipping Address:</strong></p>
-                <p id="shippingName"></p>
-                <p id="shippingAddressLine1"></p>
-                <p id="shippingAddressLine2"></p>
-                <p id="shippingCityStateZip"></p>
-                <p id="shippingPhone">Phone: </p>
-            </div>
-        </section>
-
-        <section class="ordered-items">
-            <h2>Items in Your Order</h2>
-            <div class="items-list">
-                <div class="order-item-card">
-                    <img src="" alt="Product Image 1">
-                    <div class="item-details">
-                        <h3></h3>
-                        <p>Quantity: <span class="item-qty"></span></p>
-                        <p>Price: <span class="item-price">₹</span></p>
-                        <p>Seller: </p>
+        <section class="profile-content">
+            <div id="profileOverview" class="profile-section active">
+                <h2>Profile Overview</h2>
+                <div class="profile-info-grid">
+                    <div class="info-item">
+                        <strong>Full Name:</strong> <span id="fullName">John Doe</span>
                     </div>
-                    <button class="btn-secondary item-action-btn">Return/Exchange</button>
+                    <div class="info-item">
+                        <strong>Email:</strong> <span id="emailAddress">john.doe@example.com</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Phone:</strong> <span id="phoneNumber">+91 9876543210</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Joined On:</strong> <span id="joinDate">January 15, 2023</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Total Orders:</strong> <span id="totalOrders">12</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Last Login:</strong> <span id="lastLogin">June 27, 2025</span>
+                    </div>
                 </div>
+                <button class="btn-primary edit-profile-btn">Edit Profile</button>
             </div>
-        </section>
 
-        <section class="payment-details">
-            <h2>Payment Details</h2>
-            <div class="payment-grid">
-                <div class="payment-item">
-                    <strong>Subtotal:</strong> <span id="subtotalPrice">₹</span>
+            <div id="orderHistory" class="profile-section">
+                <h2>Order History</h2>
+                <div class="orders-list">
+                    <div class="order-card">
+                        <div class="order-header">
+                            <h3>Order #OD987654321</h3>
+                            <span class="order-status delivered">Delivered</span>
+                        </div>
+                        <p>Date: June 10, 2025</p>
+                        <p>Total: ₹1,250.00</p>
+                        <a href="/orders/OD987654321" class="btn-secondary view-details-btn">View Details</a>
+                    </div>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <h3>Order #OD123456789</h3>
+                            <span class="order-status processing">Processing</span>
+                        </div>
+                        <p>Date: June 20, 2025</p>
+                        <p>Total: ₹899.00</p>
+                        <a href="/orders/OD123456789" class="btn-secondary view-details-btn">View Details</a>
+                    </div>
                 </div>
-                <div class="payment-item">
-                    <strong>Shipping:</strong> <span id="shippingCost">₹</span>
-                </div>
-                <div class="payment-item">
-                    <strong>Discount:</strong> <span id="discountAmount">- ₹</span>
-                </div>
-                <div class="payment-item total">
-                    <strong>Grand Total:</strong> <span id="grandTotalPrice" class="price">₹</span>
-                </div>
+                <button class="btn-primary load-more-btn">Load More Orders</button>
             </div>
-            <p class="invoice-link">
-                <a id="donwloadInvoice" class="btn-secondary">Download Invoice</a>
-            </p>
+
+            <div id="addressManagement" class="profile-section">
+                <h2>My Addresses</h2>
+                <div class="addresses-list">
+                    <div class="address-card">
+                        <strong>Home Address (Default)</strong>
+                        <p>123, Sample Street, Near Central Park</p>
+                        <p>New Delhi, Delhi - 110001</p>
+                        <p>Phone: +91 9876543210</p>
+                        <div class="address-actions">
+                            <button class="btn-tertiary edit-address-btn">Edit</button>
+                            <button class="btn-danger delete-address-btn">Delete</button>
+                        </div>
+                    </div>
+                    <div class="address-card">
+                        <strong>Work Address</strong>
+                        <p>456, Business Tower, MG Road</p>
+                        <p>Bengaluru, Karnataka - 560001</p>
+                        <p>Phone: +91 9123456789</p>
+                        <div class="address-actions">
+                            <button class="btn-tertiary edit-address-btn">Edit</button>
+                            <button class="btn-danger delete-address-btn">Delete</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary add-address-btn">Add New Address</button>
+            </div>
+
+            <div id="accountSettings" class="profile-section">
+                <h2>Account Settings</h2>
+                <form class="settings-form">
+                    <div class="form-group">
+                        <label for="newPassword">New Password:</label>
+                        <input type="password" id="newPassword" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password:</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                    </div>
+                    <button type="submit" class="btn-primary save-settings-btn">Change Password</button>
+                </form>
+
+                <button class="btn-danger deactivate-account-btn">Deactivate Account</button>
+            </div>
         </section>
     </main>
 
@@ -1149,7 +1441,8 @@
                     mobileMenu.classList.remove('active');
                 });
             });
-
+            
+            
 
 
 

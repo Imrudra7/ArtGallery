@@ -555,6 +555,74 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    const myProfile = document.getElementsByClassName('profile-container');
+    if (myProfile) {
+        async function fetchAndRenderProfile(e) {
+            if (!token) return window.location.href = "/account.html?tab=signin";
 
+            try {
+                const res = await fetch(`${CONFIG.BASE_URL}/api/user/profile`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const user = await res.json();
+
+                document.getElementById('userNameDisplay').textContent = user.full_name || 'User';
+                document.getElementById('userEmailDisplay').textContent = user.email;
+                document.getElementById('fullName').textContent = user.full_name;
+                document.getElementById('emailAddress').textContent = user.email;
+                document.getElementById('phoneNumber').textContent = user.phone || 'N/A';
+                document.getElementById('joinDate').textContent = new Date(user.created_at).toDateString();
+                document.getElementById('lastLogin').textContent = new Date(user.last_login).toDateString();
+                document.getElementById('totalOrders').textContent = user.total_orders;
+            } catch (err) {
+                console.error("❌ Failed to load profile", err);
+            }
+        }
+        async function loadOrderHistory() {
+            const res = await fetch(`${CONFIG.BASE_URL}/api/orders/myorders`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const orders = await res.json();
+            const container = document.querySelector('#orderHistory .orders-list');
+            container.innerHTML = '';
+
+            orders.forEach(order => {
+                container.innerHTML += `
+            <div class="order-card">
+                <div class="order-header">
+                    <h3>Order #OD${order.id}</h3>
+                    <span class="order-status ${order.status.toLowerCase()}">${order.status}</span>
+                </div>
+                <p>Date: ${new Date(order.created_at).toDateString()}</p>
+                <p>Total: ₹${order.total_amount}</p>
+                <a href="/orders/OD${order.id}" class="btn-secondary view-details-btn">View Details</a>
+            </div>`;
+            });
+        }
+
+        fetchAndRenderProfile();
+        document.querySelectorAll('.profile-nav a').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Remove active class from all links and sections
+                document.querySelectorAll('.profile-nav a').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.profile-section').forEach(section => section.classList.remove('active'));
+
+                // Add active class to clicked link and matching section
+                this.classList.add('active');
+                const targetId = this.getAttribute('href');
+                document.querySelector(targetId).classList.add('active');
+            });
+        });
+        document.querySelectorAll('.logout-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem("token");
+                alert("You have been logged out!");
+                window.location.href = "/account.html?tab=signin";
+            });
+        });
+    }
 
 });
