@@ -16,7 +16,9 @@ const cartRoutes = require('./routes/cartRoutes');
 const userRoutes = require('./routes/userRoutes');
 const pdfRoutes = require ('./routes/pdfRoute');
 const mailRoutes = require('./routes/mailRoutes');
+const checkoutSessionRoutes = require('./routes/checkoutSessionRoutes');
 
+app.use('/api/checkout', checkoutSessionRoutes);
 
 app.use('/api', uploadRoutes);
 app.use('/api', productRoutes);

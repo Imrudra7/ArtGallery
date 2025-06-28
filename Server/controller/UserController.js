@@ -86,11 +86,11 @@ const addAddress = async (req, res) => {
     try {
 
         if (is_default) {
-            await db.query(`UPDATE shipping_addresses SET is_default = false WHERE user_id = $1`, [userId]);
+            await db.query(`UPDATE user_addresses SET is_default = false WHERE user_id = $1`, [userId]);
         }
 
         const result = await db.query(`
-            INSERT INTO shipping_addresses (
+            INSERT INTO user_addresses (
                 user_id, label, full_name, address_line1, address_line2, city,
                 state, postal_code, phone, is_default
             ) VALUES (
@@ -120,7 +120,7 @@ const loadMyAddresses = async (req, res) => {
                 postal_code, 
                 phone, 
                 is_default 
-            FROM shipping_addresses 
+            FROM user_addresses 
             WHERE user_id = $1 
             ORDER BY is_default DESC, created_at DESC`,
             [userId]
@@ -138,7 +138,7 @@ const deleteAddress = async (req, res) => {
 
     try {
         const result = await db.query(
-            `DELETE FROM shipping_addresses WHERE id = $1 AND user_id = $2`,
+            `DELETE FROM user_addresses WHERE id = $1 AND user_id = $2`,
             [addressId, userId]
         );
         res.status(200).json({ message: "✅ Address deleted" });
@@ -154,7 +154,7 @@ const updateAddress = async (req, res) => {
 
     try {
         const result = await db.query(
-            `UPDATE shipping_addresses 
+            `UPDATE user_addresses 
              SET address_line1 = $1, city = $2, state = $3, postal_code = $4, phone = $5, updated_at = NOW()
              WHERE id = $6 AND user_id = $7 RETURNING *`,
             [address_line1, city, state, postal_code, phone, addressId, userId]

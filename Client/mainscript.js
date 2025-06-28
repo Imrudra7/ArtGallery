@@ -1,6 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-
+    const checkoutState = {
+        selectedAddressId: null,
+        paymentMethod: "cod",
+        useSaved: false,
+        sessionId: null
+    };
 
     const from = document.referrer;
     if (from && !from.includes("account") && !from.includes("register") && !from.includes("signin")
@@ -286,62 +291,95 @@ document.addEventListener("DOMContentLoaded", function () {
     const buyNowBtn = document.getElementById('buyNowBtn');
     if (buyNowBtn) {
 
-        buyNowBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
+        // buyNowBtn.addEventListener('click', async (e) => {
+        //     e.preventDefault();
+        //     if (!token) {
+        //         alert("Please log in to buy this item.");
+        //         window.location.href = "/account.html?tab=signin";
+        //         return;
+        //     }
+
+        //     try {
+        //         const res = await fetch(`${env.BASE_URL}/api/product/buy-now`, {
+        //             method: "POST",
+        //             headers: {
+        //                 "Content-Type": "application/json",
+        //                 "Authorization": `Bearer ${token}`
+        //             },
+        //             body: JSON.stringify({
+        //                 product_id: productId,
+        //                 quantity: 1,
+        //                 items: null
+        //             })
+        //         });
+
+        //         const result = await res.json();
+        //         const orderId = result.order_id;
+        //         if (res.ok) {
+        //             alert(`✅ Order Placed sucessfull with order id : ${orderId}`);
+        //             try {
+        //                 const mailRes = await fetch(`${env.BASE_URL}/api/mail/send-invoice`, {
+        //                     method: "POST",
+        //                     headers: {
+        //                         "Content-Type": "application/json",
+        //                         Authorization: `Bearer ${token}`
+        //                     },
+        //                     body: JSON.stringify({ orderId })
+        //                 });
+
+        //                 if (mailRes.ok) {
+        //                     console.log("📧 Invoice sent successfully");
+        //                 } else {
+        //                     console.warn("❌ Invoice email failed");
+        //                 }
+
+        //             } catch (err) {
+        //                 console.error("💥 Error while sending invoice email:", err);
+        //             }
+        //             setTimeout(() => {
+        //                 window.location.href = `order-detail.html?orderId=${orderId}`
+        //             }, 2500);
+        //         } else {
+        //             alert("❌ Order could not be placed!!" + result.message);
+        //         }
+        //     } catch (err) {
+        //         console.error("Error buying product:", err);
+        //         alert("Something went wrong.");
+        //     }
+        // });
+        buyNowBtn.addEventListener("click", async () => {
             if (!token) {
-                alert("Please log in to buy this item.");
+                alert("⚠️ Please login first");
                 window.location.href = "/account.html?tab=signin";
                 return;
             }
 
             try {
-                const res = await fetch(`${env.BASE_URL}/api/product/buy-now`, {
+                const res = await fetch(`${CONFIG.BASE_URL}/api/checkout/create`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
+                        Authorization: `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        product_id: productId,
-                        quantity: 1,
-                        items: null
+                        items: [{ product_id: productId, quantity: 1 }]
                     })
                 });
 
-                const result = await res.json();
-                const orderId = result.order_id;
-                if (res.ok) {
-                    alert(`✅ Order Placed sucessfull with order id : ${orderId}`);
-                    try {
-                        const mailRes = await fetch(`${env.BASE_URL}/api/mail/send-invoice`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                Authorization: `Bearer ${token}`
-                            },
-                            body: JSON.stringify({ orderId })
-                        });
+                const data = await res.json();
 
-                        if (mailRes.ok) {
-                            console.log("📧 Invoice sent successfully");
-                        } else {
-                            console.warn("❌ Invoice email failed");
-                        }
-
-                    } catch (err) {
-                        console.error("💥 Error while sending invoice email:", err);
-                    }
-                    setTimeout(() => {
-                        window.location.href = `order-detail.html?orderId=${orderId}`
-                    }, 2500);
+                if (res.ok && data.session_id) {
+                    // ✅ Redirect to checkout page with sessionId in URL
+                    window.location.href = `checkOut.html?session=${data.session_id}`;
                 } else {
-                    alert("❌ Order could not be placed!!" + result.message);
+                    alert("❌ Failed to start checkout session");
                 }
             } catch (err) {
-                console.error("Error buying product:", err);
-                alert("Something went wrong.");
+                console.error("❌ Error:", err);
+                alert("Something went wrong");
             }
         });
+
     }
     const statusClassMap = {
         Delivered: 'delivered',
@@ -958,6 +996,317 @@ document.addEventListener("DOMContentLoaded", function () {
                 <p><a href="/account.html?tab=signin" class="btn-primary">Go to Login Page</a></p>
             </div>
         `;
+    }
+    const checkout = document.getElementsByClassName('checkout-container');
+    if (checkout) {
+
+        const tabButtons = document.querySelectorAll('.address-selection-tabs .tab-button');
+        const addressTabContents = document.querySelectorAll('.address-tab-content');
+        const savedAddressesList = document.querySelector('.saved-addresses-list');
+        const loadingAddressesText = document.querySelector('.loading-addresses-text');
+        const noAddressesText = document.querySelector('.no-addresses-text');
+        const selectAddressBtn = document.querySelector('.select-address-btn');
+        const shippingAddressForm = document.getElementById('shippingAddressForm');
+        const sessionId = urlParams.get("session");
+        // --- Tab Switching Logic ---
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTabId = button.dataset.tab;
+
+                // Deactivate all buttons and content
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                addressTabContents.forEach(content => content.classList.remove('active'));
+
+                // Activate the clicked button and its corresponding content
+                button.classList.add('active');
+                document.getElementById(targetTabId).classList.add('active');
+
+                // If switching to saved addresses tab, fetch them
+                if (targetTabId === 'savedAddresses') {
+                    checkoutState.useSaved = true;
+                    fetchSavedAddresses();
+                } else {
+                    checkoutState.useSaved = false;
+
+                }
+            });
+        });
+
+        // --- Function to Fetch and Render Saved Addresses ---
+        async function fetchSavedAddresses() {
+            savedAddressesList.innerHTML = ''; // Clear previous content
+            loadingAddressesText.style.display = 'block'; // Show loading message
+            noAddressesText.style.display = 'none'; // Hide no addresses message
+
+            try {
+                const response = await fetch(`${CONFIG.BASE_URL}/api/user/myaddresses`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const addresses = await response.json();
+                loadingAddressesText.style.display = 'none'; // Hide loading
+
+                if (addresses.length === 0) {
+                    noAddressesText.style.display = 'block'; // Show no addresses message
+                    selectAddressBtn.style.display = 'none'; // Hide "Use Selected Address" button
+                } else {
+                    noAddressesText.style.display = 'none'; // Hide no addresses message
+                    selectAddressBtn.style.display = 'block'; // Show "Use Selected Address" button
+
+                    addresses.forEach((address, index) => {
+                        const card = document.createElement("div");
+                        card.classList.add("saved-address-card");
+                        card.innerHTML = `
+                        <input type="radio" name="selectedSavedAddress" id="savedAddress_${address.id}" value="${address.id}" ${address.is_default ? "checked" : ""}>
+                        <label for="savedAddress_${address.id}">
+                            <strong>${address.label || "Address"} ${address.is_default ? "(Default)" : ""}</strong>
+                            <p>${address.address_line1}${address.address_line2 ? ", " + address.address_line2 : ""}</p>
+                            <p>${address.city}, ${address.state} - ${address.postal_code}</p>
+                            <p>Phone: ${address.phone}</p>
+                        </label>
+                    `;
+                        savedAddressesList.appendChild(card);
+                    });
+
+                    // Pre-select the default address if any, or the first one
+                    const defaultRadio = savedAddressesList.querySelector('input[name="selectedSavedAddress"][checked]');
+                    if (!defaultRadio && addresses.length > 0) {
+                        savedAddressesList.querySelector('input[name="selectedSavedAddress"]').checked = true;
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching addresses:', error);
+                loadingAddressesText.textContent = 'Failed to load addresses. Please try again.';
+                loadingAddressesText.style.color = 'var(--secondary-color)'; // Red color for error
+                loadingAddressesText.style.display = 'block';
+                noAddressesText.style.display = 'none';
+                selectAddressBtn.style.display = 'none';
+            }
+        }
+        async function populateOrderSummary() {
+
+            if (!sessionId || !token) return;
+
+            try {
+                const res = await fetch(`${CONFIG.BASE_URL}/api/checkout/${sessionId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!res.ok) throw new Error("Failed to fetch session");
+
+                const session = await res.json();
+                const orderItems = session.items;
+
+                const orderItemsList = document.querySelector(".order-items-list");
+                orderItemsList.innerHTML = ""; // clear old content
+
+                let subtotal = 0;
+                const shipping = 50; // flat rate (customize if needed)
+                let discount = 50;
+
+                for (const item of orderItems) {
+                    const productRes = await fetch(`${CONFIG.BASE_URL}/api/products/${item.product_id}`);
+                    const product = await productRes.json();
+
+                    const itemTotal = product.price * item.quantity;
+                    subtotal += itemTotal;
+
+                    const card = document.createElement("div");
+                    card.classList.add("order-item-card");
+                    card.innerHTML = `
+                <img src="${product.image_url}" alt="${product.name}" class="order-item-image">
+                <div class="order-item-details">
+                    <h3>${product.name}</h3>
+                    <p>Quantity: ${item.quantity}</p>
+                    <p>Price: ₹${product.price}</p>
+                    <p>Total: ₹${itemTotal}</p>
+                </div>
+            `;
+                    orderItemsList.appendChild(card);
+                }
+
+                // 🔢 Apply a dummy discount if subtotal > 2000
+                //if (subtotal > 2000) discount = 100;
+
+                const grandTotal = subtotal + shipping - discount;
+
+                // Update Summary UI
+                document.getElementById("summarySubtotal").innerText = `₹${subtotal}`;
+                document.getElementById("summaryShipping").innerText = `₹${shipping}`;
+                document.getElementById("summaryDiscount").innerText = `- ₹${discount}`;
+                document.getElementById("summaryGrandTotal").innerText = `₹${grandTotal}`;
+            } catch (err) {
+                console.error("❌ Error populating order summary:", err);
+                document.querySelector(".order-items-list").innerHTML = `<p style="color:red;">Failed to load order summary.</p>`;
+            }
+        }
+
+
+        // --- Event Listener for "Use Selected Address" button (for saved addresses) ---
+        selectAddressBtn.addEventListener('click', () => {
+            const selectedRadio = document.querySelector('input[name="selectedSavedAddress"]:checked');
+            if (selectedRadio) {
+                const selectedAddressId = selectedRadio.value;
+                console.log('Selected saved address ID:', selectedAddressId);
+                checkoutState.useSaved = true;
+                checkoutState.selectedAddressId = selectedAddressId;
+                document.querySelector('.order-summary-section').classList.add('active');
+                document.querySelector('.shipping-address-section').classList.remove('active');
+                alert(`Using selected address: ${selectedAddressId}. Proceeding to next step.`);
+
+                populateOrderSummary();
+            } else {
+                alert('Please select an address or add a new one.');
+            }
+        });
+
+        // --- Initial Load: Hide messages, display default tab ---
+        loadingAddressesText.style.display = 'none';
+        noAddressesText.style.display = 'none';
+
+
+
+
+        document.querySelectorAll('.next-step-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default form submission if it's a form button
+
+                const currentSection = event.target.closest('.checkout-section');
+                currentSection.classList.remove('active');
+
+                if (currentSection.classList.contains('shipping-address-section')) {
+                    document.querySelector('.order-summary-section').classList.add('active');
+                    populateOrderSummary();
+                } else if (currentSection.classList.contains('order-summary-section')) {
+                    document.querySelector('.payment-section').classList.add('active');
+                }
+            });
+        });
+
+        document.querySelectorAll('.prev-step-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const currentSection = event.target.closest('.checkout-section');
+                currentSection.classList.remove('active');
+
+                if (currentSection.classList.contains('order-summary-section')) {
+                    document.querySelector('.shipping-address-section').classList.add('active');
+                    //populateOrderSummary();
+                } else if (currentSection.classList.contains('payment-section')) {
+                    document.querySelector('.order-summary-section').classList.add('active');
+                }
+                
+            });
+        });
+        document.querySelector('.place-order-btn').addEventListener('click', async () => {
+            if (!sessionId) return alert("❌ Session ID missing");
+
+            let payload = { session_id: sessionId };
+            let endpoint = `${CONFIG.BASE_URL}/api/checkout/finalize`;
+
+            // Use Saved Address
+            if (checkoutState.useSaved && checkoutState.selectedAddressId) {
+                payload.use_saved = true;
+                payload.address_id = checkoutState.selectedAddressId;
+            }
+            // New Address
+            else {
+                const fullName = document.getElementById("fullName").value.trim();
+                const phone = document.getElementById("phone").value.trim();
+                const addressLine1 = document.getElementById("addressLine1").value.trim();
+                const addressLine2 = document.getElementById("addressLine2").value.trim();
+                const city = document.getElementById("city").value.trim();
+                const state = document.getElementById("state").value.trim();
+                const postalCode = document.getElementById("postalCode").value.trim();
+                const saveAddress = document.getElementById("saveAddress").checked;
+
+                if (!fullName || !phone || !addressLine1 || !city || !state || !postalCode) {
+                    return alert("❗Please fill in all required address fields.");
+                }
+
+                payload = {
+                    ...payload,
+                    use_saved: false,
+                    full_name: fullName,
+                    phone,
+                    address_line1: addressLine1,
+                    address_line2: addressLine2,
+                    city,
+                    state,
+                    postal_code: postalCode,
+                    save_address: saveAddress
+                };
+            }
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (!res.ok) return alert("❌ Failed: " + data.message);
+
+                const orderId = data.order_id;
+
+                // Email invoice
+                try {
+                    const mailRes = await fetch(`${CONFIG.BASE_URL}/api/mail/send-invoice`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ orderId })
+                    });
+                    if (mailRes.ok) console.log("📧 Invoice sent successfully");
+                } catch (err) {
+                    console.error("💥 Error while sending invoice email:", err);
+                }
+
+                alert("✅ Order Placed Successfully!");
+                setTimeout(() => {
+                    window.location.href = `order-detail.html?orderId=${orderId}`;
+                }, 500);
+
+            } catch (error) {
+                console.error("❌ Final order error:", error);
+                alert("❌ Something went wrong. Please try again.");
+            }
+        });
+
+
+        if (!sessionId) {
+            alert("Invalid session");
+            window.location.href = "/"; // Ya back to product page
+        }
+        (async () => {
+            const res = await fetch(`${CONFIG.BASE_URL}/api/checkout/${sessionId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error("❌ Failed to fetch session details");
+            }
+
+            const session = await res.json();
+            console.log("📦 Session data:", session);
+
+        })();
+
+
+
     }
 
 });
