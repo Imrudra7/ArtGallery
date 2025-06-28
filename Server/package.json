@@ -8,7 +8,7 @@
     "dev": "nodemon server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Rudra Jha",
   "license": "ISC",
   "description": "",
   "dependencies": {
