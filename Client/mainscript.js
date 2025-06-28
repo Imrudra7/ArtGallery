@@ -558,7 +558,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const myProfile = document.getElementsByClassName('profile-container');
     if (myProfile) {
         async function fetchAndRenderProfile(e) {
-            if (!token) return window.location.href = "/account.html?tab=signin";
+            if (!token) {
+                showModal('Please login to view your order.');
+                window.location.href = '/account.html?tab=signin';
+                return;
+            }
 
             try {
                 const res = await fetch(`${CONFIG.BASE_URL}/api/user/profile`, {
