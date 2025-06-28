@@ -631,10 +631,12 @@
         }
 
         .profile-nav .logout-btn:hover {
-            background-color: darken(var(--secondary-color), 10%);
-            /* Pseudo-code, use actual darken function or color */
-            opacity: 0.9;
+            background-color: red;
+
+            color: #eef82f;
+
         }
+
 
         body.dark-mode .profile-nav .logout-btn {
             background-color: var(--secondary-color);
@@ -927,9 +929,13 @@
         }
 
         .btn-danger:hover {
-            background-color: darken(var(--secondary-color), 10%);
-            /* Pseudo-code */
+            background-color: #c0392b;
+            /* A slightly darker shade of --secondary-color */
             opacity: 0.9;
+            /* Slight transparency */
+            transform: translateY(-1px);
+            /* A subtle lift effect */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         body.dark-mode .btn-danger {
@@ -1159,9 +1165,10 @@
                 <a href="account.html?tab=signin" id="signin-btn" class="btn-secondary">Sign In</a>
                 <a href="#" id="logout-btn" class="btn-secondary">Logout</a>
                 <a href="account.html?tab=register" id="register-btn" class="btn-primary">Create Account</a>
-                <a href="cart.html" class="cart-icon-desktop">
+                <a href="cart.html" id="mycart" class="cart-icon-desktop">
                     <i class="fas fa-shopping-bag"></i>
                 </a>
+                <a href="Profile.html" id="profile" style="display: none;"><i class="fas fa-user-shield fa-2x"></i></a>
                 <!-- Dark Mode Toggle -->
                 <button id="theme-toggle-desktop" class="theme-toggle-btn">
                     <i class="fas fa-moon"></i>
@@ -1171,7 +1178,7 @@
 
             <!-- Hamburger menu and mobile cart icon for mobile -->
             <div class="mobile-actions">
-                <a href="cart.html" class="cart-icon-desktop">
+                <a href="cart.html" id="mycart" class="cart-icon-desktop">
                     <i class="fas fa-shopping-bag"></i>
                 </a>
                 <button id="theme-toggle-mobile" class="theme-toggle-btn">
@@ -1192,6 +1199,8 @@
                     <li><a href="Order.html">My Orders</a></li>
                     <li><a href="index.html#about">About</a></li>
                     <li><a href="index.html#contact">Contact</a></li>
+                    <li><a href="Profile.html" id="profile" style="display: none;">Manage Profile</a></li>
+                    <li><a href="cart.html" id="mycart" class="cart-icon-desktop">My cart</a></li>
                 </ul>
                 <div class="mobile-auth-actions">
                     <a href="account.html?tab=signin" id="signin-btn" class="btn-secondary">Sign In</a>
@@ -1441,8 +1450,8 @@
                     mobileMenu.classList.remove('active');
                 });
             });
-            
-            
+
+
 
 
 

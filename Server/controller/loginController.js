@@ -25,6 +25,7 @@ const loginUser = async (req, res) => {
         }
 
         const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+        await pool.query(`UPDATE users SET last_login = NOW() WHERE id = $1`, [user.id]);
 
         res.status(200).json({
             message: 'Login successful',

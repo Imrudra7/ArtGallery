@@ -125,6 +125,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const registerBtns = document.querySelectorAll("#register-btn");
     const mycart = document.querySelectorAll("#mycart");
     const orderCard = document.getElementsByClassName('order-card');
+    const userProfileBtn = document.querySelectorAll('#profile');
+    const myCartBtns = document.querySelectorAll('#mycart');
 
     const show = (elems) => elems.forEach(btn => btn.style.display = "inline-block");
     const hide = (elems) => elems.forEach(btn => btn.style.display = "none");
@@ -134,11 +136,15 @@ document.addEventListener("DOMContentLoaded", function () {
         hide(registerBtns);
         show(logoutBtns);
         show(mycart);
+        show(userProfileBtn);
+        show(myCartBtns);
     } else {
         show(registerBtns);
         show(signinBtns);
         hide(logoutBtns);
         hide(mycart);
+        hide(userProfileBtn);
+        hide(myCartBtns);
     }
 
     logoutBtns.forEach(btn => {
@@ -556,77 +562,402 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const myProfile = document.getElementsByClassName('profile-container');
-    if (myProfile) {
-        async function fetchAndRenderProfile(e) {
-            if (!token) {
-                showModal('Please login to view your order.');
-                window.location.href = '/account.html?tab=signin';
+    if (token && myProfile) {
+
+
+        // ----------------------------
+        // 🧩 Profile Overview Section
+        // ----------------------------
+        async function loadUserProfile() {
+            try {
+                const res = await fetch(`${CONFIG.BASE_URL}/api/user/profile`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (!res.ok) throw new Error("Failed to load profile");
+
+                const user = await res.json();
+
+                document.getElementById("userNameDisplay").textContent = user.name || "User";
+                document.getElementById("userEmailDisplay").textContent = user.email;
+                document.getElementById("fullName").textContent = user.name;
+                document.getElementById("emailAddress").textContent = user.email;
+                document.getElementById("phoneNumber").textContent = user.phone || "N/A";
+                document.getElementById("joinDate").textContent = new Date(user.created_at).toDateString();
+                document.getElementById("lastLogin").textContent = new Date(user.last_login).toDateString();
+                document.getElementById("totalOrders").textContent = user.total_orders;
+
+                document.querySelector(".edit-profile-btn").addEventListener("click", async () => {
+                    const newName = prompt("Enter your full name:", user.name);
+                    const newPhone = prompt("Enter your phone number:", user.phone);
+                    if (!newName || !newPhone) return alert("❌ Name and phone cannot be empty");
+
+                    const updateRes = await fetch(`${CONFIG.BASE_URL}/api/user/update`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({ name: newName, phone: newPhone }),
+                    });
+
+                    if (updateRes.ok) {
+                        alert("✅ Profile updated successfully");
+                        loadUserProfile();
+                    } else {
+                        const data = await updateRes.json();
+                        alert(`❌ ${data.message || "Failed to update profile"}`);
+                    }
+                });
+            } catch (err) {
+                console.error("❌ Error loading profile:", err);
+            }
+        }
+
+        // ----------------------------
+        // 📦 Order History Section
+        // ----------------------------
+        async function loadOrderHistory() {
+            try {
+                const res = await fetch(`${CONFIG.BASE_URL}/api/user/orders`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const orders = await res.json();
+                const container = document.querySelector("#orderHistory .orders-list");
+                container.innerHTML = "";
+
+                if (orders.length === 0) {
+                    container.innerHTML = `<p>No orders found.</p>`;
+                    return;
+                }
+
+                orders.forEach((order) => {
+                    const previewItems = order.product_items
+                        .slice(0, 2)
+                        .map(item => `
+                                    <img 
+                                        src="${item.image_url}" 
+                                        alt="${item.name}" 
+                                        style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"
+                                    >
+                         `).join("");
+
+                    container.innerHTML += `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <h3>Order #OD${order.order_id}</h3>
+                                <span class="order-status ${order.status.toLowerCase()}">${order.status}</span>
+                            </div>
+                            <p>Date: ${new Date(order.created_at).toDateString()}</p>
+                            <p>Total: ₹${order.total_amount}</p>
+                            <p>Recipient: ${order.ship_to}</p>
+                            <div style="display: flex; gap: 8px; margin: 8px 0;">
+                                ${previewItems}
+                            </div>
+                            <a href="order-detail.html?orderId=${order.order_id}" class="btn-secondary view-details-btn">View Details</a>
+                        </div>`;
+                });
+
+            } catch (err) {
+                console.error("❌ Error loading orders:", err);
+                showModal("⚠️ Failed to load order history.");
+            }
+        }
+
+
+        // ----------------------------
+        // 🏠 Address Management Section
+        // ----------------------------
+        function renderAddressCards(addresses) {
+            const container = document.querySelector(".addresses-list");
+            container.innerHTML = "";
+
+            if (!addresses || addresses.length === 0) {
+                container.innerHTML = `<p>No addresses found. Please add one.</p>`;
                 return;
             }
 
+            addresses.forEach(address => {
+                const card = document.createElement("div");
+                card.classList.add("address-card");
+
+                const isDefault = address.is_default ? "(Default)" : "";
+
+                card.innerHTML = `
+                    <strong>${address.label || "Address"} ${isDefault}</strong>
+                    <p>${address.address_line1}${address.address_line2 ? ", " + address.address_line2 : ""}</p>
+                    <p>${address.city}, ${address.state} - ${address.postal_code}</p>
+                    <p>Phone: ${address.phone}</p>
+                    <div class="address-actions">
+                        <button class="btn-tertiary edit-address-btn" data-id="${address.id}">Edit</button>
+                        <button class="btn-danger delete-address-btn" data-id="${address.id}">Delete</button>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        async function loadUserAddresses() {
+            const addressSection = document.getElementById("addressManagement");
+            const container = addressSection.querySelector(".addresses-list");
+
             try {
-                const res = await fetch(`${CONFIG.BASE_URL}/api/user/profile`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                const res = await fetch(`${CONFIG.BASE_URL}/api/user/myaddresses`, {
+                    headers: { Authorization: `Bearer ${token}` },
                 });
-                const user = await res.json();
+                if (!res.ok) throw new Error("Failed to fetch addresses");
 
-                document.getElementById('userNameDisplay').textContent = user.full_name || 'User';
-                document.getElementById('userEmailDisplay').textContent = user.email;
-                document.getElementById('fullName').textContent = user.full_name;
-                document.getElementById('emailAddress').textContent = user.email;
-                document.getElementById('phoneNumber').textContent = user.phone || 'N/A';
-                document.getElementById('joinDate').textContent = new Date(user.created_at).toDateString();
-                document.getElementById('lastLogin').textContent = new Date(user.last_login).toDateString();
-                document.getElementById('totalOrders').textContent = user.total_orders;
+                const addresses = await res.json();
+                container.innerHTML = addresses.length
+                    ? ""
+                    : `<p>No addresses found. Please add one.</p>`;
+
+                addresses.forEach((address) => {
+                    const card = document.createElement("div");
+                    card.classList.add("address-card");
+                    card.innerHTML = `
+                        <strong>${address.label || "Address"} ${address.is_default ? "(Default)" : ""
+                        }</strong>
+                        <p>${address.address_line1}${address.address_line2 ? ", " + address.address_line2 : ""
+                        }</p>
+                        <p>${address.city}, ${address.state} - ${address.postal_code}</p>
+                        <p>Phone: ${address.phone}</p>
+                        <div class="address-actions">
+                        <button class="btn-tertiary edit-address-btn" data-id="${address.id}">Edit</button>
+                        <button class="btn-danger delete-address-btn" data-id="${address.id}">Delete</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
             } catch (err) {
-                console.error("❌ Failed to load profile", err);
+                console.error("❌ Error loading addresses:", err);
             }
+
+            // 🧹 Handle Edit/Delete
+            addressSection.addEventListener("click", async (e) => {
+                const id = e.target.dataset.id;
+                if (e.target.classList.contains("delete-address-btn")) {
+                    if (!confirm("Delete this address?")) return;
+                    try {
+                        const res = await fetch(`${CONFIG.BASE_URL}/api/user/addresses/${id}`, {
+                            method: "DELETE",
+                            headers: { Authorization: `Bearer ${token}` },
+                        });
+                        if (res.ok) {
+                            //showModal("✅ Address deleted successfully");
+                            const updated = await fetch(`${CONFIG.BASE_URL}/api/user/myaddresses`, {
+                                headers: { Authorization: `Bearer ${token}` }
+                            });
+                            const updatedList = await updated.json();
+                            renderAddressCards(updatedList);
+                        } else {
+                            showModal("❌ Failed to delete address");
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        showModal("⚠️ Something went wrong");
+                    }
+                } else if (e.target.classList.contains("edit-address-btn")) {
+                    alert(`✏️ Edit logic for address ID: ${id}`);
+
+
+                    // You can also prefill using existing DOM content if needed
+                    const card = e.target.closest(".address-card");
+                    const fullLine = card.querySelector("p:nth-of-type(1)").textContent;
+                    const [line1, line2] = fullLine.split(',').map(str => str.trim());
+                    const currentAddressLine1 = prompt("🏠 Address Line 1:", line1 || "");
+                    const currentAddressLine2 = prompt("🏢 Address Line 2:", line2 || "");
+                    const currentCity = prompt("🏙 City:", card.querySelector("p:nth-of-type(2)").textContent.split(",")[0]);
+                    const currentState = prompt("🗺 State:", card.querySelector("p:nth-of-type(2)").textContent.split(",")[1]?.split("-")[0]?.trim());
+                    const currentPostal = prompt("📮 Postal Code:", card.querySelector("p:nth-of-type(2)").textContent.split("-")[1]?.trim());
+                    const currentPhone = prompt("📞 Phone Number:", card.querySelector("p:nth-of-type(3)").textContent.replace("Phone: ", ""));
+
+                    if (!currentAddressLine1 || !currentCity || !currentState || !currentPostal || !currentPhone) {
+                        alert("❌ All fields are required!");
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch(`${CONFIG.BASE_URL}/api/user/update-addresses/${id}`, {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                address_line1: currentAddressLine1,
+                                address_line2: currentAddressLine2,
+                                city: currentCity,
+                                state: currentState,
+                                postal_code: currentPostal,
+                                phone: currentPhone
+                            })
+                        });
+
+                        const data = await res.json();
+
+                        if (res.ok) {
+                            //showModal("✅ Address updated successfully.");
+                            // Refresh address list
+                            const updated = await fetch(`${CONFIG.BASE_URL}/api/user/myaddresses`, {
+                                headers: { Authorization: `Bearer ${token}` }
+                            });
+                            const updatedList = await updated.json();
+                            renderAddressCards(updatedList);
+                        } else {
+                            showModal(`❌ ${data.message || "Failed to update address"}`);
+                        }
+                    } catch (err) {
+                        console.error("💥 Error updating address:", err);
+                        showModal("❌ Something went wrong while updating address.");
+                    }
+                }
+            });
         }
-        async function loadOrderHistory() {
-            const res = await fetch(`${CONFIG.BASE_URL}/api/orders/myorders`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const orders = await res.json();
-            const container = document.querySelector('#orderHistory .orders-list');
-            container.innerHTML = '';
+        document.querySelector('.add-address-btn')?.addEventListener('click', async () => {
+            const label = prompt("Label (e.g., Home, Work):", "Home");
+            if (!label) return alert("❌ Label is required.");
 
-            orders.forEach(order => {
-                container.innerHTML += `
-            <div class="order-card">
-                <div class="order-header">
-                    <h3>Order #OD${order.id}</h3>
-                    <span class="order-status ${order.status.toLowerCase()}">${order.status}</span>
-                </div>
-                <p>Date: ${new Date(order.created_at).toDateString()}</p>
-                <p>Total: ₹${order.total_amount}</p>
-                <a href="/orders/OD${order.id}" class="btn-secondary view-details-btn">View Details</a>
-            </div>`;
+            const fullName = prompt("Full Name:");
+            const addressLine1 = prompt("Address Line 1:");
+            const addressLine2 = prompt("Address Line 2 (optional):", "");
+            const city = prompt("City:");
+            const state = prompt("State:");
+            const postalCode = prompt("Postal Code:");
+            const phone = prompt("Phone:");
+            const isDefault = confirm("Make this your default address?");
+
+            if (!fullName || !addressLine1 || !city || !state || !postalCode || !phone) {
+                return alert("❌ All fields except address line 2 are required.");
+            }
+
+            try {
+                const res = await fetch(`${CONFIG.BASE_URL}/api/user/add-address`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        label,
+                        full_name: fullName,
+                        address_line1: addressLine1,
+                        address_line2: addressLine2,
+                        city,
+                        state,
+                        postal_code: postalCode,
+                        phone,
+                        is_default: isDefault
+                    })
+                });
+
+                if (!res.ok) {
+                    const data = await res.json();
+                    return alert(`❌ ${data.message || 'Failed to add address'}`);
+                }
+
+                const newAddressList = await (await fetch(`${CONFIG.BASE_URL}/api/user/myaddresses`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })).json();
+
+                renderAddressCards(newAddressList);
+                alert("✅ Address added successfully!");
+
+            } catch (err) {
+                console.error("Error adding address:", err);
+                alert("❌ Something went wrong while adding the address.");
+            }
+        });
+
+
+        // ----------------------------
+        // ⚙️ Account Settings Section
+        // ----------------------------
+        function initAccountSettings() {
+            const settingsSection = document.getElementById("accountSettings");
+            const form = settingsSection.querySelector(".settings-form");
+            const deactivateBtn = settingsSection.querySelector(".deactivate-account-btn");
+
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const newPassword = document.getElementById("newPassword").value;
+                const confirmPassword = document.getElementById("confirmPassword").value;
+
+                if (newPassword !== confirmPassword) return alert("❌ Passwords do not match");
+
+                try {
+                    const res = await fetch(`${CONFIG.BASE_URL}/api/user/change-password`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({ newPassword }),
+                    });
+                    const data = await res.json();
+                    res.ok ? alert("✅ Password changed") : alert(`❌ ${data.message}`);
+                    form.reset();
+                } catch (err) {
+                    console.error("Password change error:", err);
+                }
+            });
+
+            deactivateBtn.addEventListener("click", async () => {
+                if (!confirm("Are you sure you want to deactivate your account?")) return;
+                try {
+                    const res = await fetch(`${CONFIG.BASE_URL}/api/user/deactivate`, {
+                        method: "DELETE",
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (res.ok) {
+                        alert("✅ Account deactivated");
+                        localStorage.removeItem("token");
+                        window.location.href = "/account.html?tab=signin";
+                    }
+                } catch (err) {
+                    console.error("Deactivation error:", err);
+                }
             });
         }
 
-        fetchAndRenderProfile();
-        document.querySelectorAll('.profile-nav a').forEach(link => {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
+        // ----------------------------
+        // 🚀 Init All Sections on Load
+        // ----------------------------
+        (async () => {
+            await loadUserProfile();
+            await loadOrderHistory();
+            await loadUserAddresses();
+            initAccountSettings();
 
-                // Remove active class from all links and sections
-                document.querySelectorAll('.profile-nav a').forEach(l => l.classList.remove('active'));
-                document.querySelectorAll('.profile-section').forEach(section => section.classList.remove('active'));
+            // Logout button
+            document.querySelectorAll(".logout-btn").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    localStorage.removeItem("token");
+                    alert("Logged out successfully");
+                    window.location.href = "/account.html?tab=signin";
+                });
+            });
 
-                // Add active class to clicked link and matching section
-                this.classList.add('active');
-                const targetId = this.getAttribute('href');
-                document.querySelector(targetId).classList.add('active');
+            // Tab switching
+            document.querySelectorAll(".profile-nav a").forEach((link) => {
+                link.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll(".profile-section").forEach((sec) => sec.classList.remove("active"));
+                    document.querySelectorAll(".profile-nav a").forEach((l) => l.classList.remove("active"));
+                    const target = document.querySelector(link.getAttribute("href"));
+                    target.classList.add("active");
+                    link.classList.add("active");
+                });
             });
-        });
-        document.querySelectorAll('.logout-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                localStorage.removeItem("token");
-                alert("You have been logged out!");
-                window.location.href = "/account.html?tab=signin";
-            });
-        });
+        })();
+
+    } else {
+        myProfile.innerHTML = `
+            <div class="unauthorized-message">
+                <h1>Please log in to view your profile</h1>
+                <p><a href="/account.html?tab=signin" class="btn-primary">Go to Login Page</a></p>
+            </div>
+        `;
     }
 
 });

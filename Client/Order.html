@@ -788,9 +788,10 @@
                 <a href="account.html?tab=signin" id="signin-btn" class="btn-secondary">Sign In</a>
                 <a href="#" id="logout-btn" class="btn-secondary">Logout</a>
                 <a href="account.html?tab=register" id="register-btn" class="btn-primary">Create Account</a>
-                <a href="cart.html" class="cart-icon-desktop">
+                <a href="cart.html" id="mycart" class="cart-icon-desktop">
                     <i class="fas fa-shopping-bag"></i>
                 </a>
+                <a href="Profile.html" id="profile" style="display: none;"><i class="fas fa-user-shield fa-2x"></i></a>
                 <!-- Dark Mode Toggle -->
                 <button id="theme-toggle-desktop" class="theme-toggle-btn">
                     <i class="fas fa-moon"></i>
@@ -800,7 +801,7 @@
 
             <!-- Hamburger menu and mobile cart icon for mobile -->
             <div class="mobile-actions">
-                <a href="cart.html" class="cart-icon-desktop">
+                <a href="cart.html" id="mycart" class="cart-icon-desktop">
                     <i class="fas fa-shopping-bag"></i>
                 </a>
                 <button id="theme-toggle-mobile" class="theme-toggle-btn">
@@ -821,6 +822,7 @@
                     <li><a href="Order.html">My Orders</a></li>
                     <li><a href="index.html#about">About</a></li>
                     <li><a href="index.html#contact">Contact</a></li>
+                    <li><a href="Profile.html" id="profile" style="display: none;">Manage Profile</a></li>
                 </ul>
                 <div class="mobile-auth-actions">
                     <a href="account.html?tab=signin" id="signin-btn" class="btn-secondary">Sign In</a>
