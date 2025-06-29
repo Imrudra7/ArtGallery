@@ -1283,75 +1283,99 @@
 
                     if (cartItems.length > 0) {
                         //showModal('Proceeding to checkout with your items!');
+                        // try {
+                        //     const res = await fetch(`${CONFIG.BASE_URL}/api/product/buy-now`, {
+                        //         method: "POST",
+                        //         headers: {
+                        //             "Content-Type": "application/json",
+                        //             "Authorization": `Bearer ${token}`
+                        //         },
+                        //         body: JSON.stringify({
+                        //             product_id: NaN,
+                        //             quantity: 0,
+                        //             items: cartItems
+                        //         })
+                        //     });
+
+                        //     const result = await res.json();
+                        //     const orderId = result.order_id;
+                        //     if (res.ok) {
+                        //         showModal(`✅ Order Placed sucessfull with order id : ${orderId}`);
+
+                        //         try {
+                        //             const deleteCart = await fetch(`${CONFIG.BASE_URL}/api/cart/clearCart`, {
+                        //                 method: "DELETE",
+                        //                 headers: {
+                        //                     "Content-Type": "application/json",
+                        //                     "Authorization": `Bearer ${token}`
+                        //                 }
+                        //             });
+                        //             const deleteCartResult = deleteCart.json();
+                        //             if (deleteCart.ok) {
+                        //                 console.log(deleteCartResult.message);
+
+                        //             } else {
+                        //                 console.log(deleteCartResult.message);
+                        //             }
+                        //         } catch (err) {
+                        //             console.log('Error in clearing cart : ', err);
+                        //         }
+                        //         cartItems = [];
+                        //         renderCart();
+
+                        //         try {
+                        //             const mailRes = await fetch(`${CONFIG.BASE_URL}/api/mail/send-invoice`, {
+                        //                 method: "POST",
+                        //                 headers: {
+                        //                     "Content-Type": "application/json",
+                        //                     Authorization: `Bearer ${token}`
+                        //                 },
+                        //                 body: JSON.stringify({ orderId })
+                        //             });
+
+                        //             if (mailRes.ok) {
+                        //                 console.log("📧 Invoice sent successfully");
+                        //             } else {
+                        //                 console.warn("❌ Invoice email failed");
+                        //             }
+                        //             // ⏳ Auto redirect after 3 seconds
+                        //             setTimeout(() => {
+                        //                 window.location.href = `order-detail.html?orderId=${orderId}`
+                        //             }, 2500);
+                        //         } catch (err) {
+                        //             console.error("💥 Error while sending invoice email:", err);
+                        //         }
+
+                        //     } else {
+                        //         showModal("❌ Order could not be placed!!" + result.message);
+                        //     }
+                        // } catch (err) {
+                        //     console.error("Error buying product:", err);
+                        //     showModal("Something went wrong.");
+                        // }
                         try {
-                            const res = await fetch(`${CONFIG.BASE_URL}/api/product/buy-now`, {
+                            const res = await fetch(`${CONFIG.BASE_URL}/api/checkout/create`, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "Authorization": `Bearer ${token}`
+                                    Authorization: `Bearer ${token}`
                                 },
                                 body: JSON.stringify({
-                                    product_id: NaN,
-                                    quantity: 0,
                                     items: cartItems
                                 })
                             });
 
-                            const result = await res.json();
-                            const orderId = result.order_id;
-                            if (res.ok) {
-                                showModal(`✅ Order Placed sucessfull with order id : ${orderId}`);
+                            const data = await res.json();
 
-                                try {
-                                    const deleteCart = await fetch(`${CONFIG.BASE_URL}/api/cart/clearCart`, {
-                                        method: "DELETE",
-                                        headers: {
-                                            "Content-Type": "application/json",
-                                            "Authorization": `Bearer ${token}`
-                                        }
-                                    });
-                                    const deleteCartResult = deleteCart.json();
-                                    if (deleteCart.ok) {
-                                        console.log(deleteCartResult.message);
-
-                                    } else {
-                                        console.log(deleteCartResult.message);
-                                    }
-                                } catch (err) {
-                                    console.log('Error in clearing cart : ', err);
-                                }
-                                cartItems = [];
-                                renderCart();
-
-                                try {
-                                    const mailRes = await fetch(`${CONFIG.BASE_URL}/api/mail/send-invoice`, {
-                                        method: "POST",
-                                        headers: {
-                                            "Content-Type": "application/json",
-                                            Authorization: `Bearer ${token}`
-                                        },
-                                        body: JSON.stringify({ orderId })
-                                    });
-
-                                    if (mailRes.ok) {
-                                        console.log("📧 Invoice sent successfully");
-                                    } else {
-                                        console.warn("❌ Invoice email failed");
-                                    }
-                                    // ⏳ Auto redirect after 3 seconds
-                                    setTimeout(() => {
-                                        window.location.href = `order-detail.html?orderId=${orderId}`
-                                    }, 2500);
-                                } catch (err) {
-                                    console.error("💥 Error while sending invoice email:", err);
-                                }
-
+                            if (res.ok && data.session_id) {
+                                // ✅ Redirect to checkout page with sessionId in URL
+                                window.location.href = `checkOut.html?session=${data.session_id}`;
                             } else {
-                                showModal("❌ Order could not be placed!!" + result.message);
+                                alert("❌ Failed to start checkout session");
                             }
                         } catch (err) {
-                            console.error("Error buying product:", err);
-                            showModal("Something went wrong.");
+                            console.error("❌ Error:", err);
+                            alert("Something went wrong");
                         }
                     } else {
                         showModal('Your cart is empty. Please add items before checking out.');

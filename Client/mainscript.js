@@ -477,7 +477,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         function renderOrderDetail(data) {
             const statusClass = statusClassMap[data.status] || '';
-
+            
+            
             document.getElementById("orderIdDisplay").innerText = `#OD${data.order_id}`;
             document.getElementById("orderDate").innerText = new Date(data.created_at).toDateString();
             document.getElementById("orderStatus").innerText = data.status || "N/A";
@@ -1102,7 +1103,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const session = await res.json();
                 const orderItems = session.items;
-
+                console.log("orderItems : Rudra ",orderItems);
+                
                 const orderItemsList = document.querySelector(".order-items-list");
                 orderItemsList.innerHTML = ""; // clear old content
 
@@ -1111,6 +1113,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 let discount = 50;
 
                 for (const item of orderItems) {
+                    
                     const productRes = await fetch(`${CONFIG.BASE_URL}/api/products/${item.product_id}`);
                     const product = await productRes.json();
 
@@ -1205,8 +1208,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         document.querySelector('.place-order-btn').addEventListener('click', async () => {
             if (!sessionId) return alert("❌ Session ID missing");
-
-            let payload = { session_id: sessionId };
+             const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value.toUpperCase();
+            let payload = { session_id: sessionId , payment_method:selectedPaymentMethod};
             let endpoint = `${CONFIG.BASE_URL}/api/checkout/finalize`;
 
             // Use Saved Address
@@ -1242,6 +1245,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     save_address: saveAddress
                 };
             }
+            console.log(payload);
+            
 
             try {
                 const res = await fetch(endpoint, {

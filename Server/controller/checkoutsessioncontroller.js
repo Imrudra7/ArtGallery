@@ -62,9 +62,12 @@ const finalizeOrder = async (req, res) => {
         city,
         state,
         postal_code,
-        save_address
+        save_address,
+        payment_method
     } = req.body;
-
+    if (!payment_method || !['COD', 'UPI'].includes(payment_method)) {
+        return res.status(400).json({ message: 'Invalid payment method' });
+    }
     try {
         const sessionRes = await pool.query(
             `SELECT * FROM checkout_sessions WHERE id = $1 AND user_id = $2 AND status = 'pending'`,
@@ -139,7 +142,23 @@ const finalizeOrder = async (req, res) => {
                 [orderId, item.product_id, item.quantity]
             );
         }
+        // MAIN PAYMENT AREA
+        const paidAt = payment_method === 'UPI' ? new Date() : null;
+        await pool.query(
+            `INSERT INTO payments 
+                    (order_id, payment_method, payment_status, payment_reference, paid_at)
+                VALUES ($1, $2, $3, $4, $5)`,
+            [
+                orderId,
+                payment_method,
+                payment_method === 'COD' ? 'pending' : 'initiated',
+                null, // reference null for now
+                paidAt  // paid_at will be set when actually paid
+            ]
+        );
 
+
+        // Payment area end
         // 🏠 Insert shipping address (new or saved)
         await pool.query(
             `INSERT INTO shipping_addresses (
@@ -159,8 +178,8 @@ const finalizeOrder = async (req, res) => {
                 shippingAddress.phone
             ]
         );
-        console.log("use: ",use_saved," savad:",save_address);
-        
+        console.log("use: ", use_saved, " savad:", save_address);
+
         // 📌 Save address if asked
         if (!use_saved && save_address) {
             await pool.query(

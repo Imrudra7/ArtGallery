@@ -54,7 +54,7 @@ const loadOrderDetail = async (req, res) => {
                 o.total_amount,
 
                 
-                coalesce(pay.payment_method, 'N/A'),
+                pay.payment_method,
                 coalesce(pay.payment_status,'N/A'),
                 pay.paid_at,
 
