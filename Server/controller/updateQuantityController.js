@@ -16,7 +16,8 @@ const updateQuantity = async (req, res) => {
         }
 
         const cartId = cartResult.rows[0].id;
-
+        console.log("CART ID : ",cartId, "PRODUCT_ID : ", productId);
+        
         if (operation === 'increase') {
             await pool.query(
                 `UPDATE cart_items SET quantity = quantity + 1 WHERE cart_id = $1 AND product_id = $2`,
@@ -51,7 +52,7 @@ const updateQuantity = async (req, res) => {
 
         // Return updated cart
         const updatedCart = await pool.query(`
-            SELECT p.id, p.name, p.price, p.image_url, ci.quantity
+            SELECT p.id as product_id,  p.name, p.price, p.image_url, ci.quantity
             FROM cart_items ci
             JOIN cart c ON ci.cart_id = c.id
             JOIN products p ON ci.product_id = p.id
