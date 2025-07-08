@@ -1056,7 +1056,7 @@
                             <img src="${item.image_url}" alt="${item.name}" onerror="this.onerror=null;this.src='https://placehold.co/150x150/d2b48c/FFFFFF?text=Image+Not+Found'">
                             <div class="cart-item-info">
                                 <h3>${item.name}</h3>
-                                <p>by ${item.artist}</p>
+                                <p>by ${item.artist ? item.artist : "Art Gallery"}</p>
                                 <p class="price">₹${item.price.toFixed(2)}</p>
                             </div>
                             <div class="quantity-controls">
