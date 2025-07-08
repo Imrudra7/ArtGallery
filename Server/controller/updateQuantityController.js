@@ -17,7 +17,7 @@ const updateQuantity = async (req, res) => {
 
         const cartId = cartResult.rows[0].id;
         console.log("CART ID : ",cartId, "PRODUCT_ID : ", productId);
-        
+
         if (operation === 'increase') {
             await pool.query(
                 `UPDATE cart_items SET quantity = quantity + 1 WHERE cart_id = $1 AND product_id = $2`,
@@ -40,13 +40,13 @@ const updateQuantity = async (req, res) => {
                     [cartId, productId]
                 );
             }
-        }else if(operation === 'remove') {
+        } else if (operation === 'remove') {
             await pool.query(
                 `DELETE FROM cart_items WHERE cart_id = $1 AND product_id = $2`,
                 [cartId, productId]
             );
         }
-         else {
+        else {
             return res.status(400).json({ message: 'Invalid operation.' });
         }
 
@@ -57,6 +57,7 @@ const updateQuantity = async (req, res) => {
             JOIN cart c ON ci.cart_id = c.id
             JOIN products p ON ci.product_id = p.id
             WHERE c.user_id = $1
+            ORDER BY ci.id
         `, [userId]);
 
         res.json(updatedCart.rows);
