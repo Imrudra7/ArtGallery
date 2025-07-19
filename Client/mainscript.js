@@ -477,8 +477,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         function renderOrderDetail(data) {
             const statusClass = statusClassMap[data.status] || '';
-            
-            
+
+
             document.getElementById("orderIdDisplay").innerText = `#OD${data.order_id}`;
             document.getElementById("orderDate").innerText = new Date(data.created_at).toDateString();
             document.getElementById("orderStatus").innerText = data.status || "N/A";
@@ -1103,8 +1103,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const session = await res.json();
                 const orderItems = session.items;
-                console.log("orderItems : Rudra ",orderItems);
-                
+                console.log("orderItems : Rudra ", orderItems);
+
                 const orderItemsList = document.querySelector(".order-items-list");
                 orderItemsList.innerHTML = ""; // clear old content
 
@@ -1113,7 +1113,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 let discount = 50;
 
                 for (const item of orderItems) {
-                    
+
                     const productRes = await fetch(`${CONFIG.BASE_URL}/api/products/${item.product_id}`);
                     const product = await productRes.json();
 
@@ -1203,53 +1203,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else if (currentSection.classList.contains('payment-section')) {
                     document.querySelector('.order-summary-section').classList.add('active');
                 }
-                
+
             });
         });
-        document.querySelector('.place-order-btn').addEventListener('click', async () => {
-            if (!sessionId) return alert("❌ Session ID missing");
-             const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value.toUpperCase();
-            let payload = { session_id: sessionId , payment_method:selectedPaymentMethod};
-            let endpoint = `${CONFIG.BASE_URL}/api/checkout/finalize`;
-
-            // Use Saved Address
-            if (checkoutState.useSaved && checkoutState.selectedAddressId) {
-                payload.use_saved = true;
-                payload.address_id = checkoutState.selectedAddressId;
-            }
-            // New Address
-            else {
-                const fullName = document.getElementById("fullName").value.trim();
-                const phone = document.getElementById("phone").value.trim();
-                const addressLine1 = document.getElementById("addressLine1").value.trim();
-                const addressLine2 = document.getElementById("addressLine2").value.trim();
-                const city = document.getElementById("city").value.trim();
-                const state = document.getElementById("state").value.trim();
-                const postalCode = document.getElementById("postalCode").value.trim();
-                const saveAddress = document.getElementById("saveAddress").checked;
-
-                if (!fullName || !phone || !addressLine1 || !city || !state || !postalCode) {
-                    return alert("❗Please fill in all required address fields.");
-                }
-
-                payload = {
-                    ...payload,
-                    use_saved: false,
-                    full_name: fullName,
-                    phone,
-                    address_line1: addressLine1,
-                    address_line2: addressLine2,
-                    city,
-                    state,
-                    postal_code: postalCode,
-                    save_address: saveAddress
-                };
-            }
-            console.log(payload);
-            
-
+        async function finalizeOrderCall(payload) {
             try {
-                const res = await fetch(endpoint, {
+                const res = await fetch(`${CONFIG.BASE_URL}/api/checkout/finalize`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -1263,7 +1222,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const orderId = data.order_id;
 
-                // Email invoice
+                // Optional: Send invoice
                 try {
                     const mailRes = await fetch(`${CONFIG.BASE_URL}/api/mail/send-invoice`, {
                         method: "POST",
@@ -1273,21 +1232,234 @@ document.addEventListener("DOMContentLoaded", function () {
                         },
                         body: JSON.stringify({ orderId })
                     });
-                    if (mailRes.ok) console.log("📧 Invoice sent successfully");
+                    if (mailRes.ok) console.log("📧 Invoice sent");
                 } catch (err) {
-                    console.error("💥 Error while sending invoice email:", err);
+                    console.error("📩 Mail error:", err);
                 }
 
-                alert("✅ Order Placed Successfully!");
+                alert("✅ Order placed successfully!");
                 setTimeout(() => {
                     window.location.href = `order-detail.html?orderId=${orderId}`;
                 }, 500);
-
             } catch (error) {
-                console.error("❌ Final order error:", error);
+                console.error("❌ Finalize Order Error:", error);
                 alert("❌ Something went wrong. Please try again.");
             }
+        }
+
+        // document.querySelector('.place-order-btn').addEventListener('click', async () => {
+        //     if (!sessionId) return alert("❌ Session ID missing");
+        //     const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value.toUpperCase();
+        //     let payload = { session_id: sessionId, payment_method: selectedPaymentMethod };
+        //     let endpoint = `${CONFIG.BASE_URL}/api/checkout/finalize`;
+
+        //     // Use Saved Address
+        //     if (checkoutState.useSaved && checkoutState.selectedAddressId) {
+        //         payload.use_saved = true;
+        //         payload.address_id = checkoutState.selectedAddressId;
+        //     }
+        //     // New Address
+        //     else {
+        //         const fullName = document.getElementById("fullName").value.trim();
+        //         const phone = document.getElementById("phone").value.trim();
+        //         const addressLine1 = document.getElementById("addressLine1").value.trim();
+        //         const addressLine2 = document.getElementById("addressLine2").value.trim();
+        //         const city = document.getElementById("city").value.trim();
+        //         const state = document.getElementById("state").value.trim();
+        //         const postalCode = document.getElementById("postalCode").value.trim();
+        //         const saveAddress = document.getElementById("saveAddress").checked;
+
+        //         if (!fullName || !phone || !addressLine1 || !city || !state || !postalCode) {
+        //             return alert("❗Please fill in all required address fields.");
+        //         }
+
+        //         payload = {
+        //             ...payload,
+        //             use_saved: false,
+        //             full_name: fullName,
+        //             phone,
+        //             address_line1: addressLine1,
+        //             address_line2: addressLine2,
+        //             city,
+        //             state,
+        //             postal_code: postalCode,
+        //             save_address: saveAddress
+        //         };
+        //     }
+        //     console.log(payload);
+
+
+        //     try {
+        //         const res = await fetch(endpoint, {
+        //             method: "POST",
+        //             headers: {
+        //                 "Content-Type": "application/json",
+        //                 Authorization: `Bearer ${token}`
+        //             },
+        //             body: JSON.stringify(payload)
+        //         });
+
+        //         const data = await res.json();
+        //         if (!res.ok) return alert("❌ Failed: " + data.message);
+
+        //         const orderId = data.order_id;
+
+        //         // Email invoice
+        //         try {
+        //             const mailRes = await fetch(`${CONFIG.BASE_URL}/api/mail/send-invoice`, {
+        //                 method: "POST",
+        //                 headers: {
+        //                     "Content-Type": "application/json",
+        //                     Authorization: `Bearer ${token}`
+        //                 },
+        //                 body: JSON.stringify({ orderId })
+        //             });
+        //             if (mailRes.ok) console.log("📧 Invoice sent successfully");
+        //         } catch (err) {
+        //             console.error("💥 Error while sending invoice email:", err);
+        //         }
+
+        //         alert("✅ Order Placed Successfully!");
+        //         setTimeout(() => {
+        //             window.location.href = `order-detail.html?orderId=${orderId}`;
+        //         }, 500);
+
+        //     } catch (error) {
+        //         console.error("❌ Final order error:", error);
+        //         alert("❌ Something went wrong. Please try again.");
+        //     }
+        // }); BAND KIYA HAI FOR UPI
+        document.querySelector('.place-order-btn').addEventListener('click', async () => {
+            if (!sessionId) return alert("❌ Session ID missing");
+
+            const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value.toUpperCase();
+            let payload = { session_id: sessionId, payment_method: selectedPaymentMethod };
+            let endpoint = `${CONFIG.BASE_URL}/api/checkout/finalize`;
+
+            // Address block
+            if (checkoutState.useSaved && checkoutState.selectedAddressId) {
+                payload.use_saved = true;
+                payload.address_id = checkoutState.selectedAddressId;
+            } else {
+                const fullName = document.getElementById("fullName").value.trim();
+                const phone = document.getElementById("phone").value.trim();
+                const addressLine1 = document.getElementById("addressLine1").value.trim();
+                const addressLine2 = document.getElementById("addressLine2").value.trim();
+                const city = document.getElementById("city").value.trim();
+                const state = document.getElementById("state").value.trim();
+                const postalCode = document.getElementById("postalCode").value.trim();
+                const saveAddress = document.getElementById("saveAddress").checked;
+
+                if (!fullName || !phone || !addressLine1 || !city || !state || !postalCode) {
+                    return alert("❗Please fill in all required address fields.");
+                }
+
+                
+                 payload = {
+                    ...payload,
+                    use_saved: false,
+                    full_name: fullName,
+                    phone,
+                    address_line1: addressLine1,
+                    address_line2: addressLine2,
+                    city,
+                    state,
+                    postal_code: postalCode,
+                    save_address: saveAddress,
+                    totalAmount: totalAmount,
+                };
+            }
+
+            // 🔁 COD: Directly finalize order
+            if (selectedPaymentMethod === "COD") {
+                return finalizeOrderCall(payload);
+            }
+
+            // 🧾 UPI/Razorpay Flow
+            try {
+                // Step 1: Create Razorpay Order from backend
+                const createRes = await fetch(`${CONFIG.BASE_URL}/api/razorpay/create-order`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const razorpayData = await createRes.json();
+                if (!createRes.ok) return alert("❌ Razorpay order failed: " + razorpayData.message);
+
+                const { razorpayOrder, totalAmount } = razorpayData;
+
+                const options = {
+                    key: "rzp_test_lPRCDfwNUUy24i",
+                    amount: totalAmount * 100,
+                    currency: "INR",
+                    name: "Mithila Art Gallery",
+                    description: "Order Payment",
+                    order_id: razorpayOrder.id,
+                    handler: async function (response) {
+                        // Step 3: Payment succeeded, finalize order
+                        payload.razorpay_order_id = response.razorpay_order_id;
+                        payload.razorpay_payment_id = response.razorpay_payment_id;
+                        payload.razorpay_signature = response.razorpay_signature;
+                        const res = await fetch(`${CONFIG.BASE_URL}/api/razorpay/verify-razorpay-payment`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`
+                            },
+                            body: JSON.stringify(payload),
+                        });
+
+                        const data = await res.json();
+
+                        if (data.success) {
+
+                            const orderId = data.order_id;
+
+                            // Email invoice
+                            try {
+                                const mailRes = await fetch(`${CONFIG.BASE_URL}/api/mail/send-invoice`, {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        Authorization: `Bearer ${token}`
+                                    },
+                                    body: JSON.stringify({ orderId })
+                                });
+                                if (mailRes.ok) console.log("📧 Invoice sent successfully");
+                            } catch (err) {
+                                console.error("💥 Error while sending invoice email:", err);
+                            }
+
+                            alert("✅ Order Placed Successfully!");
+                            setTimeout(() => {
+                                window.location.href = `order-detail.html?orderId=${orderId}`;
+                            }, 500);
+
+                        } else {
+                            alert("Payment verification failed. Please contact support.");
+                        }
+                    },
+                    prefill: {
+                        name: payload.full_name || "",
+                        contact: payload.phone || "",
+                    },
+                    theme: {
+                        color: "#3399cc"
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+            } catch (err) {
+                console.error("💥 Razorpay Init Error:", err);
+                alert("❌ Failed to initiate payment");
+            }
         });
+
 
 
         if (!sessionId) {

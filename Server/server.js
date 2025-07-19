@@ -17,6 +17,14 @@ const userRoutes = require('./routes/userRoutes');
 const pdfRoutes = require ('./routes/pdfRoute');
 const mailRoutes = require('./routes/mailRoutes');
 const checkoutSessionRoutes = require('./routes/checkoutSessionRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+
+app.use((req, res, next) => {
+    console.log("🟢 METHOD:", req.method);
+    console.log("🟢 BODY:", req.body);
+    next();
+});
+
 
 app.use('/api/checkout', checkoutSessionRoutes);
 
@@ -27,6 +35,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/downloadPDF', pdfRoutes);
 app.use('/api/mail', mailRoutes);
+app.use('/api/razorpay',paymentRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is live');

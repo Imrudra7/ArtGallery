@@ -40,8 +40,8 @@ const placeOrder = async (req, res) => {
         // 🧾 3. Insert into orders table
         const orderRes = await pool.query(
             `INSERT INTO orders (user_id, total_amount, payment_method, status)
-             VALUES ($1, $2, $3, 'Pending') RETURNING id`,
-            [userId, totalAmount, paymentMethod]
+             VALUES ($1, $2, $3, $4) RETURNING id`,
+            [userId, totalAmount, paymentMethod, paymentMethod === 'upi' ? 'Initiated' : 'Pending']
         );
         const orderId = orderRes.rows[0].id;
 
