@@ -947,7 +947,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         document.querySelector('.add-address-btn')?.addEventListener('click', async () => {
             const label = prompt("Label (e.g., Home, Work):", "Home");
-            if (!label) return alert("❌ Label is required.");
+            if (!label) { hideLoader(); return alert("❌ Label is required."); }
 
             const fullName = prompt("Full Name:");
             const addressLine1 = prompt("Address Line 1:");
