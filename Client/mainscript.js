@@ -47,12 +47,44 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     applyThemeBasedOnTime();
+    // This runs when the page is ready
+    window.onload = () => {
+        const loaderHTML = `<div id="loader-overlay">
+                            <div class="loader-spinner"></div>
+                            </div>`;
 
+        // Append the loader to the body
+        document.body.insertAdjacentHTML('beforeend', loaderHTML);
+    };
+
+    /**
+     * Displays the full-page loader.
+     */
+    function showLoader() {
+        console.log("Showing loader");
+
+        const loader = document.getElementById('loader-overlay');
+        if (loader) {
+            loader.style.display = 'flex';
+        }
+    }
+
+    /**
+     * Hides the full-page loader.
+     */
+    function hideLoader() {
+        console.log("Hiding loader");
+
+        const loader = document.getElementById('loader-overlay');
+        if (loader) {
+            loader.style.display = 'none';
+        }
+    }
 
     if (signinForm) {
         document.getElementById("signin-form").addEventListener("submit", async function (e) {
             e.preventDefault();
-
+            showLoader();
             const email = document.getElementById("signin-email").value;
             const password = document.getElementById("signin-password").value;
 
@@ -66,6 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await res.json();
 
                 if (res.ok) {
+                    hideLoader();
                     localStorage.setItem("token", data.token);
                     localStorage.setItem("user", JSON.stringify(data.user));
                     alert("Login successful!");
@@ -75,10 +108,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     window.location.href = redirectTo || "index.html";
                 } else {
                     alert(data.message || "Login failed");
+                    hideLoader();
                 }
             } catch (err) {
                 console.error("Login error:", err);
                 alert("Something went wrong during login.");
+                hideLoader();
             }
         });
     }
@@ -87,17 +122,19 @@ document.addEventListener("DOMContentLoaded", function () {
     if (registerForm) {
         document.getElementById("register-form").addEventListener("submit", async function (e) {
             e.preventDefault();
-
+            showLoader();
             const name = document.getElementById("register-name").value;
             const email = document.getElementById("register-email").value;
             const password = document.getElementById("register-password").value;
             const phone = document.getElementById("register-phone").value;
             if (!name || !email || !password || !phone) {
                 alert("Please fill all the details.");
+                hideLoader();
                 return;
             }
             if (phone.startsWith("0")) {
                 alert("Phone number should not start with 0.");
+                hideLoader();
                 return;
             }
             try {
@@ -110,17 +147,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 const result = await res.json();
 
                 if (res.ok) {
-
+                    hideLoader();
                     localStorage.setItem("token", result.token);
                     localStorage.setItem("user", JSON.stringify(result.user));
                     alert(result.message);
                     window.location.href = "account.html?tab=signin";
                 } else {
                     alert(result.message || "Registration failed");
+                    hideLoader();
                 }
             } catch (err) {
                 console.error("Registration error:", err);
                 alert("Something went wrong during login.");
+                hideLoader();
             }
         });
     }
@@ -163,6 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     async function fetchAndRenderCategories() {
+        showLoader();
         try {
             const res = await fetch(`${env.BASE_URL}/api/categories`);
             const categories = await res.json();
@@ -187,6 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (index === 0) tabContent.classList.add("active");
                 tabContent.innerHTML = `<h2>${category.category_description}</h2><div class="product-grid"></div>`;
                 container.appendChild(tabContent);
+                hideLoader();
             });
 
             // Load products for the default tab
@@ -199,16 +240,18 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
                     btn.classList.add("active");
                     document.getElementById(btn.dataset.tab).classList.add("active");
-
+                    hideLoader();
                     const categoryId = btn.dataset.tab.split("-")[1];
                     loadProducts(categoryId);
                 });
             });
         } catch (err) {
+            hideLoader();
             console.error("Failed to fetch categories:", err);
         }
     }
     async function loadProducts(categoryId) {
+        showLoader();
         try {
             const res = await fetch(`${env.BASE_URL}/api/productByCategory?category_id=${categoryId}`);
             const data = await res.json();
@@ -217,6 +260,7 @@ document.addEventListener("DOMContentLoaded", function () {
             grid.innerHTML = ""; // Clear old content
 
             if (data.length === 0) {
+                hideLoader();
                 grid.innerHTML = '<p>No products available in this category.</p>';
                 return;
             }
@@ -237,7 +281,9 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
                 grid.insertAdjacentHTML("beforeend", productHTML);
             });
+            hideLoader();
         } catch (err) {
+            hideLoader();
             console.error("Failed to load products:", err);
         }
     }
@@ -255,8 +301,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (addToCartBtn) {
         addToCartBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-
+            showLoader();
             if (!token) {
+                hideLoader();
                 alert("Please log in to add items to cart.");
                 window.location.href = "/account.html?tab=signin";
                 return;
@@ -278,11 +325,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 const result = await res.json();
 
                 if (res.ok) {
+                    hideLoader();
                     alert("✅ Product added to cart!");
                 } else {
+                    hideLoader();
                     alert("❌ " + result.message);
                 }
             } catch (err) {
+                hideLoader();
                 console.error("Error adding to cart:", err);
                 alert("Something went wrong.");
             }
@@ -348,7 +398,9 @@ document.addEventListener("DOMContentLoaded", function () {
         //     }
         // });
         buyNowBtn.addEventListener("click", async () => {
+            showLoader();
             if (!token) {
+                hideLoader();
                 alert("⚠️ Please login first");
                 window.location.href = "/account.html?tab=signin";
                 return;
@@ -369,12 +421,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await res.json();
 
                 if (res.ok && data.session_id) {
+                    hideLoader();
                     // ✅ Redirect to checkout page with sessionId in URL
                     window.location.href = `checkOut.html?session=${data.session_id}`;
                 } else {
+                    hideLoader();
                     alert("❌ Failed to start checkout session");
                 }
             } catch (err) {
+                hideLoader();
                 console.error("❌ Error:", err);
                 alert("Something went wrong");
             }
@@ -391,6 +446,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (orderCard) {
         let orderItems = [];
         function renderOrderCards(orderData) {
+            showLoader();
             const ordersList = document.getElementById('orders-list');
             ordersList.innerHTML = '';
             orderData.forEach(order => {
@@ -420,15 +476,17 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
 
                 ordersList.appendChild(card);
+                hideLoader();
             });
         }
 
         async function fetchAndRenderOrders(e) {
-
+            showLoader();
 
             if (!token) {
                 // Show sign-in/register buttons if not logged in
                 //toggleAuthButtons(false);
+                hideLoader();
                 showModal('Please login to view your Orders.');
                 window.location.href = '/account.html?tab=signin';
                 return;
@@ -443,6 +501,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (!res.ok) {
                     if (res.status === 401) { // Unauthorized, token might be invalid
+                        hideLoader();
                         showModal('Session expired. Please log in again.');
                         toggleAuthButtons(false); // Switch to sign-in/register
                         localStorage.removeItem('token'); // Clear invalid token
@@ -451,6 +510,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         window.location.href = '/account.html?tab=signin';
                         return;
                     } else {
+                        hideLoader();
                         throw new Error(`HTTP error! status: ${res.status}`);
                     }
                 }
@@ -460,6 +520,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (orderItems.length > 0)
                     renderOrderCards(orderItems);
             } catch (error) {
+                hideLoader();
                 console.error('Error fetching orders:', error);
                 showModal('Failed to load order. Please log in again.');
                 localStorage.removeItem('token'); // Clear invalid token
@@ -476,6 +537,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const orderId = urlParams.get('orderId');
 
         function renderOrderDetail(data) {
+            showLoader();
             const statusClass = statusClassMap[data.status] || '';
 
 
@@ -517,10 +579,12 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("shippingCost").innerText = `₹${data.shipping_fee}`;
             document.getElementById("discountAmount").innerText = `- ₹${data.discount}`;
             document.getElementById("grandTotalPrice").innerText = `₹${data.grand_total}`;
+            hideLoader();
         }
         async function fetchAndRenderOrderDetail(orderId) {
+            showLoader();
             if (!token) {
-
+                hideLoader();
                 showModal('Please login to view your order.');
                 window.location.href = '/account.html?tab=signin';
                 return;
@@ -538,6 +602,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (!res.ok) {
                     if (res.status === 401) {
+                        hideLoader();
                         showModal('Session expired. Please log in again.');
                         //toggleAuthButtons(false);
                         localStorage.removeItem('token');
@@ -546,6 +611,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         window.location.href = '/account.html?tab=signin';
                         return;
                     } else {
+                        hideLoader();
                         throw new Error(`HTTP error! status: ${res.status}`);
                     }
                 }
@@ -554,6 +620,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data) console.log(data);
                 renderOrderDetail(data[0]);
             } catch (error) {
+                hideLoader();
                 console.error('Error fetching order:', error);
                 showModal('Failed to load order. Please log in again.');
                 localStorage.removeItem('token'); // Clear invalid token
@@ -566,7 +633,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (donwloadInvoice) {
             donwloadInvoice.addEventListener('click', async (e) => {
                 e.preventDefault();
-
+                showLoader();
                 try {
                     const res = await fetch(`${CONFIG.BASE_URL}/api/downloadPDF/generateInvoice`, {
                         method: 'POST',
@@ -578,6 +645,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
 
                     if (!res.ok) {
+                        hideLoader();
                         throw new Error('Failed to generate invoice');
                     }
 
@@ -592,7 +660,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     a.click();
                     a.remove();
                     window.URL.revokeObjectURL(url);
+                    hideLoader();
                 } catch (error) {
+                    hideLoader();
                     console.error("❌ Error downloading invoice:", error.message);
                     alert("Invoice download failed.");
                 }
@@ -608,11 +678,12 @@ document.addEventListener("DOMContentLoaded", function () {
         // 🧩 Profile Overview Section
         // ----------------------------
         async function loadUserProfile() {
+            showLoader();
             try {
                 const res = await fetch(`${CONFIG.BASE_URL}/api/user/profile`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                if (!res.ok) throw new Error("Failed to load profile");
+                if (!res.ok) { hideLoader(); throw new Error("Failed to load profile"); }
 
                 const user = await res.json();
 
@@ -624,12 +695,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("joinDate").textContent = new Date(user.created_at).toDateString();
                 document.getElementById("lastLogin").textContent = new Date(user.last_login).toDateString();
                 document.getElementById("totalOrders").textContent = user.total_orders;
-
+                hideLoader();
                 document.querySelector(".edit-profile-btn").addEventListener("click", async () => {
                     const newName = prompt("Enter your full name:", user.name);
                     const newPhone = prompt("Enter your phone number:", user.phone);
                     if (!newName || !newPhone) return alert("❌ Name and phone cannot be empty");
-
+                    showLoader();
                     const updateRes = await fetch(`${CONFIG.BASE_URL}/api/user/update`, {
                         method: "PUT",
                         headers: {
@@ -640,14 +711,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
 
                     if (updateRes.ok) {
+                        hideLoader();
                         alert("✅ Profile updated successfully");
                         loadUserProfile();
                     } else {
+                        hideLoader();
                         const data = await updateRes.json();
                         alert(`❌ ${data.message || "Failed to update profile"}`);
                     }
                 });
             } catch (err) {
+                hideLoader();
                 console.error("❌ Error loading profile:", err);
             }
         }
@@ -656,6 +730,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // 📦 Order History Section
         // ----------------------------
         async function loadOrderHistory() {
+            showLoader();
             try {
                 const res = await fetch(`${CONFIG.BASE_URL}/api/user/orders`, {
                     headers: { Authorization: `Bearer ${token}` },
@@ -666,6 +741,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (orders.length === 0) {
                     container.innerHTML = `<p>No orders found.</p>`;
+                    hideLoader();
                     return;
                 }
 
@@ -694,9 +770,11 @@ document.addEventListener("DOMContentLoaded", function () {
                             </div>
                             <a href="order-detail.html?orderId=${order.order_id}" class="btn-secondary view-details-btn">View Details</a>
                         </div>`;
+                    hideLoader();
                 });
 
             } catch (err) {
+                hideLoader();
                 console.error("❌ Error loading orders:", err);
                 showModal("⚠️ Failed to load order history.");
             }
@@ -707,10 +785,12 @@ document.addEventListener("DOMContentLoaded", function () {
         // 🏠 Address Management Section
         // ----------------------------
         function renderAddressCards(addresses) {
+            showLoader();
             const container = document.querySelector(".addresses-list");
             container.innerHTML = "";
 
             if (!addresses || addresses.length === 0) {
+                hideLoader();
                 container.innerHTML = `<p>No addresses found. Please add one.</p>`;
                 return;
             }
@@ -733,10 +813,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 `;
 
                 container.appendChild(card);
+                hideLoader();
             });
         }
 
         async function loadUserAddresses() {
+            showLoader();
             const addressSection = document.getElementById("addressManagement");
             const container = addressSection.querySelector(".addresses-list");
 
@@ -744,7 +826,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const res = await fetch(`${CONFIG.BASE_URL}/api/user/myaddresses`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                if (!res.ok) throw new Error("Failed to fetch addresses");
+                if (!res.ok) { hideLoader(); throw new Error("Failed to fetch addresses"); }
 
                 const addresses = await res.json();
                 container.innerHTML = addresses.length
@@ -767,13 +849,16 @@ document.addEventListener("DOMContentLoaded", function () {
                         </div>
                     `;
                     container.appendChild(card);
+                    hideLoader();
                 });
             } catch (err) {
+                hideLoader();
                 console.error("❌ Error loading addresses:", err);
             }
 
             // 🧹 Handle Edit/Delete
             addressSection.addEventListener("click", async (e) => {
+                showLoader();
                 const id = e.target.dataset.id;
                 if (e.target.classList.contains("delete-address-btn")) {
                     if (!confirm("Delete this address?")) return;
@@ -783,6 +868,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             headers: { Authorization: `Bearer ${token}` },
                         });
                         if (res.ok) {
+
                             //showModal("✅ Address deleted successfully");
                             const updated = await fetch(`${CONFIG.BASE_URL}/api/user/myaddresses`, {
                                 headers: { Authorization: `Bearer ${token}` }
@@ -790,14 +876,17 @@ document.addEventListener("DOMContentLoaded", function () {
                             const updatedList = await updated.json();
                             renderAddressCards(updatedList);
                         } else {
+                            hideLoader();
                             showModal("❌ Failed to delete address");
                         }
                     } catch (err) {
+                        hideLoader();
                         console.error(err);
                         showModal("⚠️ Something went wrong");
                     }
                 } else if (e.target.classList.contains("edit-address-btn")) {
                     alert(`✏️ Edit logic for address ID: ${id}`);
+                    hideLoader();
 
 
                     // You can also prefill using existing DOM content if needed
@@ -812,10 +901,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     const currentPhone = prompt("📞 Phone Number:", card.querySelector("p:nth-of-type(3)").textContent.replace("Phone: ", ""));
 
                     if (!currentAddressLine1 || !currentCity || !currentState || !currentPostal || !currentPhone) {
+                        hideLoader();
                         alert("❌ All fields are required!");
                         return;
                     }
-
+                    showLoader();
                     try {
                         const res = await fetch(`${CONFIG.BASE_URL}/api/user/update-addresses/${id}`, {
                             method: "PUT",
@@ -844,9 +934,11 @@ document.addEventListener("DOMContentLoaded", function () {
                             const updatedList = await updated.json();
                             renderAddressCards(updatedList);
                         } else {
+                            hideLoader();
                             showModal(`❌ ${data.message || "Failed to update address"}`);
                         }
                     } catch (err) {
+                        hideLoader();
                         console.error("💥 Error updating address:", err);
                         showModal("❌ Something went wrong while updating address.");
                     }
@@ -867,9 +959,10 @@ document.addEventListener("DOMContentLoaded", function () {
             const isDefault = confirm("Make this your default address?");
 
             if (!fullName || !addressLine1 || !city || !state || !postalCode || !phone) {
+                hideLoader();
                 return alert("❌ All fields except address line 2 are required.");
             }
-
+            showLoader();
             try {
                 const res = await fetch(`${CONFIG.BASE_URL}/api/user/add-address`, {
                     method: "POST",
@@ -892,6 +985,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (!res.ok) {
                     const data = await res.json();
+                    hideLoader();
                     return alert(`❌ ${data.message || 'Failed to add address'}`);
                 }
 
@@ -901,8 +995,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 renderAddressCards(newAddressList);
                 alert("✅ Address added successfully!");
-
+                hideLoader();
             } catch (err) {
+                hideLoader();
                 console.error("Error adding address:", err);
                 alert("❌ Something went wrong while adding the address.");
             }
@@ -919,10 +1014,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             form.addEventListener("submit", async (e) => {
                 e.preventDefault();
+                showLoader();
                 const newPassword = document.getElementById("newPassword").value;
                 const confirmPassword = document.getElementById("confirmPassword").value;
 
-                if (newPassword !== confirmPassword) return alert("❌ Passwords do not match");
+                if (newPassword !== confirmPassword) {
+                    hideLoader();
+
+                    return alert("❌ Passwords do not match");
+                }
 
                 try {
                     const res = await fetch(`${CONFIG.BASE_URL}/api/user/change-password`, {
@@ -934,26 +1034,35 @@ document.addEventListener("DOMContentLoaded", function () {
                         body: JSON.stringify({ newPassword }),
                     });
                     const data = await res.json();
+                    hideLoader();
+
                     res.ok ? alert("✅ Password changed") : alert(`❌ ${data.message}`);
                     form.reset();
                 } catch (err) {
+                    hideLoader();
+
                     console.error("Password change error:", err);
                 }
             });
 
             deactivateBtn.addEventListener("click", async () => {
                 if (!confirm("Are you sure you want to deactivate your account?")) return;
+                showLoader();
                 try {
                     const res = await fetch(`${CONFIG.BASE_URL}/api/user/deactivate`, {
                         method: "DELETE",
                         headers: { Authorization: `Bearer ${token}` },
                     });
                     if (res.ok) {
+                        hideLoader();
+
                         alert("✅ Account deactivated");
                         localStorage.removeItem("token");
                         window.location.href = "/account.html?tab=signin";
                     }
                 } catch (err) {
+                    hideLoader();
+
                     console.error("Deactivation error:", err);
                 }
             });
@@ -963,11 +1072,12 @@ document.addEventListener("DOMContentLoaded", function () {
         // 🚀 Init All Sections on Load
         // ----------------------------
         (async () => {
+            showLoader();
             await loadUserProfile();
             await loadOrderHistory();
             await loadUserAddresses();
             initAccountSettings();
-
+            hideLoader();
             // Logout button
             document.querySelectorAll(".logout-btn").forEach((btn) => {
                 btn.addEventListener("click", () => {
@@ -981,11 +1091,13 @@ document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll(".profile-nav a").forEach((link) => {
                 link.addEventListener("click", (e) => {
                     e.preventDefault();
+                    showLoader();
                     document.querySelectorAll(".profile-section").forEach((sec) => sec.classList.remove("active"));
                     document.querySelectorAll(".profile-nav a").forEach((l) => l.classList.remove("active"));
                     const target = document.querySelector(link.getAttribute("href"));
                     target.classList.add("active");
                     link.classList.add("active");
+                    hideLoader();
                 });
             });
         })();
@@ -1012,6 +1124,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // --- Tab Switching Logic ---
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
+
                 const targetTabId = button.dataset.tab;
 
                 // Deactivate all buttons and content
@@ -1024,9 +1137,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // If switching to saved addresses tab, fetch them
                 if (targetTabId === 'savedAddresses') {
+                    showLoader();
                     checkoutState.useSaved = true;
                     fetchSavedAddresses();
+                    hideLoader();
                 } else {
+                    hideLoader();
                     checkoutState.useSaved = false;
 
                 }
@@ -1035,6 +1151,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // --- Function to Fetch and Render Saved Addresses ---
         async function fetchSavedAddresses() {
+            showLoader();
             savedAddressesList.innerHTML = ''; // Clear previous content
             loadingAddressesText.style.display = 'block'; // Show loading message
             noAddressesText.style.display = 'none'; // Hide no addresses message
@@ -1045,6 +1162,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 if (!response.ok) {
+                    hideLoader();
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
@@ -1054,6 +1172,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (addresses.length === 0) {
                     noAddressesText.style.display = 'block'; // Show no addresses message
                     selectAddressBtn.style.display = 'none'; // Hide "Use Selected Address" button
+                    hideLoader();
                 } else {
                     noAddressesText.style.display = 'none'; // Hide no addresses message
                     selectAddressBtn.style.display = 'block'; // Show "Use Selected Address" button
@@ -1071,6 +1190,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         </label>
                     `;
                         savedAddressesList.appendChild(card);
+                        hideLoader();
                     });
 
                     // Pre-select the default address if any, or the first one
@@ -1080,6 +1200,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }
             } catch (error) {
+                hideLoader();
                 console.error('Error fetching addresses:', error);
                 loadingAddressesText.textContent = 'Failed to load addresses. Please try again.';
                 loadingAddressesText.style.color = 'var(--secondary-color)'; // Red color for error
@@ -1089,7 +1210,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
         async function populateOrderSummary() {
-
+            showLoader();
             if (!sessionId || !token) return;
 
             try {
@@ -1099,11 +1220,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                 });
 
-                if (!res.ok) throw new Error("Failed to fetch session");
+                if (!res.ok) { hideLoader(); throw new Error("Failed to fetch session"); }
 
                 const session = await res.json();
                 const orderItems = session.items;
-                console.log("orderItems : Rudra ", orderItems);
+                //console.log("orderItems : Rudra ", orderItems);
 
                 const orderItemsList = document.querySelector(".order-items-list");
                 orderItemsList.innerHTML = ""; // clear old content
@@ -1132,6 +1253,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             `;
                     orderItemsList.appendChild(card);
+                    hideLoader();
                 }
 
                 // 🔢 Apply a dummy discount if subtotal > 2000
@@ -1145,6 +1267,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("summaryDiscount").innerText = `- ₹${discount}`;
                 document.getElementById("summaryGrandTotal").innerText = `₹${grandTotal}`;
             } catch (err) {
+                hideLoader();
                 console.error("❌ Error populating order summary:", err);
                 document.querySelector(".order-items-list").innerHTML = `<p style="color:red;">Failed to load order summary.</p>`;
             }
@@ -1165,6 +1288,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 populateOrderSummary();
             } else {
+                hideLoader();
                 alert('Please select an address or add a new one.');
             }
         });
@@ -1207,6 +1331,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
         async function finalizeOrderCall(payload) {
+            showLoader();
             try {
                 const res = await fetch(`${CONFIG.BASE_URL}/api/checkout/finalize`, {
                     method: "POST",
@@ -1218,7 +1343,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 const data = await res.json();
-                if (!res.ok) return alert("❌ Failed: " + data.message);
+                if (!res.ok) { hideLoader(); return alert("❌ Failed: " + data.message); }
 
                 const orderId = data.order_id;
 
@@ -1234,14 +1359,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                     if (mailRes.ok) console.log("📧 Invoice sent");
                 } catch (err) {
+                    hideLoader();
                     console.error("📩 Mail error:", err);
                 }
 
                 alert("✅ Order placed successfully!");
+                hideLoader();
                 setTimeout(() => {
                     window.location.href = `order-detail.html?orderId=${orderId}`;
                 }, 500);
             } catch (error) {
+                hideLoader();
                 console.error("❌ Finalize Order Error:", error);
                 alert("❌ Something went wrong. Please try again.");
             }
@@ -1331,7 +1459,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // }); BAND KIYA HAI FOR UPI
         document.querySelector('.place-order-btn').addEventListener('click', async () => {
             if (!sessionId) return alert("❌ Session ID missing");
-
+            showLoader();
             const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value.toUpperCase();
             let payload = { session_id: sessionId, payment_method: selectedPaymentMethod };
             let endpoint = `${CONFIG.BASE_URL}/api/checkout/finalize`;
@@ -1351,6 +1479,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const saveAddress = document.getElementById("saveAddress").checked;
 
                 if (!fullName || !phone || !addressLine1 || !city || !state || !postalCode) {
+                    hideLoader();
                     return alert("❗Please fill in all required address fields.");
                 }
 
@@ -1372,6 +1501,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // 🔁 COD: Directly finalize order
             if (selectedPaymentMethod === "COD") {
+                hideLoader();
                 return finalizeOrderCall(payload);
             }
 
@@ -1396,7 +1526,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 const razorpayData = await createRes.json();
-                if (!createRes.ok) return alert("❌ Razorpay order failed: " + razorpayData.message);
+                if (!createRes.ok) { hideLoader(); return alert("❌ Razorpay order failed: " + razorpayData.message); }
 
                 const { razorpayOrder, totalAmount } = razorpayData;
                 console.log("Inside prefill : ", payload);
@@ -1439,21 +1569,22 @@ document.addEventListener("DOMContentLoaded", function () {
                                 });
                                 if (mailRes.ok) console.log("📧 Invoice sent successfully");
                             } catch (err) {
+                                hideLoader();
                                 console.error("💥 Error while sending invoice email:", err);
                             }
 
                             alert("✅ Order Placed Successfully!");
+                            hideLoader();
                             setTimeout(() => {
                                 window.location.href = `order-detail.html?orderId=${orderId}`;
                             }, 500);
 
                         } else {
+                            hideLoader();
                             alert("Payment verification failed. Please contact support.");
                         }
                     },
                     prefill: {
-
-
                         name: userDataResult.name || "",
                         contact: userDataResult.phone || "",
                         email: userDataResult.email || ""
@@ -1466,6 +1597,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const rzp = new Razorpay(options);
                 rzp.open();
             } catch (err) {
+                hideLoader();
                 console.error("💥 Razorpay Init Error:", err);
                 alert("❌ Failed to initiate payment");
             }
@@ -1473,25 +1605,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-        if (!sessionId) {
-            alert("Invalid session");
-            window.location.href = "/"; // Ya back to product page
-        }
-        (async () => {
-            const res = await fetch(`${CONFIG.BASE_URL}/api/checkout/${sessionId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+        // if (!sessionId) {
+        //     alert("Invalid session");
+        //     window.location.href = "/"; // Ya back to product page
+        // }
+        // (async () => {
+        //     const res = await fetch(`${CONFIG.BASE_URL}/api/checkout/${sessionId}`, {
+        //         headers: {
+        //             Authorization: `Bearer ${token}`
+        //         }
+        //     });
 
-            if (!res.ok) {
-                throw new Error("❌ Failed to fetch session details");
-            }
+        //     if (!res.ok) {
+        //         throw new Error("❌ Failed to fetch session details");
+        //     }
 
-            const session = await res.json();
-            console.log("📦 Session data:", session);
+        //     const session = await res.json();
+        //     console.log("📦 Session data:", session);
 
-        })();
+        // })();
 
 
 
