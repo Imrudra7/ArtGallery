@@ -534,6 +534,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     if (orderDetail) {
+        showLoader();
         const orderId = urlParams.get('orderId');
 
         function renderOrderDetail(data) {
@@ -858,11 +859,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // 🧹 Handle Edit/Delete
             addressSection.addEventListener("click", async (e) => {
-                showLoader();
+
                 const id = e.target.dataset.id;
                 if (e.target.classList.contains("delete-address-btn")) {
                     if (!confirm("Delete this address?")) return;
                     try {
+                        showLoader();
                         const res = await fetch(`${CONFIG.BASE_URL}/api/user/addresses/${id}`, {
                             method: "DELETE",
                             headers: { Authorization: `Bearer ${token}` },
@@ -946,10 +948,10 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
         document.querySelector('.add-address-btn')?.addEventListener('click', async () => {
-            //showLoader();
+            // showLoader();
             const label = prompt("Label (e.g., Home, Work):", "Home");
-            if (!label) { return alert("❌ Label is required."); }
-
+            if (!label) { alert("❌ Label is required."); return; }
+            // hideLoader();
             const fullName = prompt("Full Name:");
             const addressLine1 = prompt("Address Line 1:");
             const addressLine2 = prompt("Address Line 2 (optional):", "");
@@ -965,6 +967,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             try {
+                showLoader();
                 const res = await fetch(`${CONFIG.BASE_URL}/api/user/add-address`, {
                     method: "POST",
                     headers: {
@@ -986,7 +989,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (!res.ok) {
                     const data = await res.json();
-                    //hideLoader();
+                    hideLoader();
                     return alert(`❌ ${data.message || 'Failed to add address'}`);
                 }
 
