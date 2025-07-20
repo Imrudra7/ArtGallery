@@ -1391,7 +1391,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (!createRes.ok) return alert("❌ Razorpay order failed: " + razorpayData.message);
 
                 const { razorpayOrder, totalAmount } = razorpayData;
-
+                console.log("Inside prefill : ", payload);
                 const options = {
                     key: "rzp_test_lPRCDfwNUUy24i",
                     amount: totalAmount * 100,
@@ -1444,6 +1444,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     },
                     prefill: {
+                        
+                        
                         name: payload.full_name || "",
                         contact: payload.phone || "",
                     },

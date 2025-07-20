@@ -176,7 +176,7 @@ const finalizeOrder = async (req, res) => {
             ]
         );
 
-
+        await clearCartAfterOrder(userId);
 
         // Payment area end
         // 🏠 Insert shipping address (new or saved)
@@ -347,7 +347,7 @@ const finalizeOrderHelper = async (payload) => {
                 paidAt
             ]
         );
-
+        await clearCartAfterOrder(userId);
 
 
         // Payment area end
@@ -390,6 +390,39 @@ const finalizeOrderHelper = async (payload) => {
     } catch (err) {
         console.error('❌ Error finalizing order:', err);
         return { success: false, status: 500, message: 'Server error' };
+    }
+};
+const clearCartAfterOrder = async (userId) => {
+    try {
+        // 1. Get cart_id using user_id
+        const cartRes = await pool.query(
+            'SELECT id FROM cart WHERE user_id = $1',
+            [userId]
+        );
+
+        if (cartRes.rows.length === 0) {
+            console.log('No cart found for this user.');
+            return;
+        }
+
+        const cartId = cartRes.rows[0].id;
+
+        // 2. Delete all items from cart_items
+        await pool.query(
+            'DELETE FROM cart_items WHERE cart_id = $1',
+            [cartId]
+        );
+
+        // 3. Optionally delete cart itself
+        await pool.query(
+            'DELETE FROM cart WHERE id = $1',
+            [cartId]
+        );
+
+        console.log('Cart and items cleared.');
+    } catch (error) {
+        console.error('Error clearing cart:', error);
+        throw error;
     }
 };
 
