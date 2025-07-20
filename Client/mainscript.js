@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
             localStorage.removeItem("token");
             localStorage.removeItem("redirectAfterLogin");
-            window.location.reload();
+            window.location.href = 'index.html';
         });
     });
 

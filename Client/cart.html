@@ -1025,6 +1025,39 @@
                 modalMessage.textContent = message;
                 customModal.style.display = 'flex';
             }
+            window.onload = () => {
+                const loaderHTML = `<div id="loader-overlay">
+                            <div class="loader-spinner"></div>
+                            </div>`;
+
+                // Append the loader to the body
+                document.body.insertAdjacentHTML('beforeend', loaderHTML);
+            };
+
+            /**
+             * Displays the full-page loader.
+             */
+            function showLoader1() {
+                console.log("Showing loader");
+
+                const loader = document.getElementById('loader-overlay');
+                if (loader) {
+                    loader.style.display = 'flex';
+                }
+            }
+
+            /**
+             * Hides the full-page loader.
+             */
+            function hideLoader1() {
+                console.log("Hiding loader");
+
+                const loader = document.getElementById('loader-overlay');
+                if (loader) {
+                    loader.style.display = 'none';
+                }
+            }
+
 
             modalCloseBtn.addEventListener('click', () => customModal.style.display = 'none');
             customModal.addEventListener('click', (e) => {
@@ -1036,10 +1069,11 @@
             let cartItems = [];
 
             async function fetchCartFromBackend() {
-
+                showLoader1();
 
                 if (!token) {
                     // Show sign-in/register buttons if not logged in
+                    hideLoader1();
                     toggleAuthButtons(false);
                     showModal('Please login to view your cart.');
                     window.location.href = '/account.html?tab=signin';
@@ -1058,6 +1092,7 @@
 
                     if (!res.ok) {
                         if (res.status === 401) { // Unauthorized, token might be invalid
+                            hideLoader1();
                             showModal('Session expired. Please log in again.');
                             toggleAuthButtons(false); // Switch to sign-in/register
                             localStorage.removeItem('token'); // Clear invalid token
@@ -1065,6 +1100,7 @@
                             localStorage.removeItem("redirectAfterLogin");
                             window.location.href = '/account.html?tab=signin';
                         } else {
+                            hideLoader1();
                             throw new Error(`HTTP error! status: ${res.status}`);
                         }
                     }
@@ -1072,7 +1108,9 @@
                     const data = await res.json();
                     cartItems = Array.isArray(data) ? data : [];
                     renderCart();
+                    hideLoader1();
                 } catch (error) {
+                    hideLoader1();
                     console.error('Error fetching cart:', error);
                     showModal('Failed to load cart. Please log in again.');
                     localStorage.removeItem('token'); // Clear invalid token
@@ -1083,9 +1121,11 @@
 
 
             function renderCart() {
+                showLoader1();
                 console.table("CART ITEMS : ", cartItems);
                 cartItemsContainer.innerHTML = '';
                 if (cartItems.length === 0) {
+                    hideLoader1();
                     emptyCartMessage.classList.remove('hidden');
                 } else {
                     emptyCartMessage.classList.add('hidden');
@@ -1113,6 +1153,7 @@
                             </button>
                         `;
                         cartItemsContainer.appendChild(itemElement);
+                        hideLoader1();
                     });
                 }
                 updateTotals();
@@ -1135,8 +1176,10 @@
             }
 
             async function updateQuantityInBackend(productId, operation) {
+                showLoader1();
                 const token = localStorage.getItem("token");
                 if (!token) {
+                    hideLoader1();
                     showModal('Please login to update your cart.');
                     window.location.href = '/account.html?tab=signin';
                     return;
@@ -1151,6 +1194,7 @@
                         body: JSON.stringify({ productId: productId, operation: operation })
                     });
                     if (!res.ok) {
+                        hideLoader1();
                         throw new Error(`HTTP error! status: ${res.status}`);
                     }
                     const data = await res.json();
@@ -1158,6 +1202,7 @@
                     renderCart();
                     showModal('Cart updated successfully!');
                 } catch (err) {
+                    hideLoader1();
                     console.error('Error updating quantity:', err);
                     showModal('Failed to update cart. Please ensure you are logged in and try again.');
                 }
@@ -1318,7 +1363,9 @@
                 // Checkout button functionality
                 checkoutBtn.addEventListener('click', async (e) => {
                     e.preventDefault();
+                    showLoader1();
                     if (!token) {
+                        hideLoader1();
                         showModal("Please log in to buy this item.");
                         window.location.href = "/account.html?tab=signin";
                         return;
@@ -1411,16 +1458,20 @@
                             const data = await res.json();
 
                             if (res.ok && data.session_id) {
+                                hideLoader1();
                                 // ✅ Redirect to checkout page with sessionId in URL
                                 window.location.href = `checkOut.html?session=${data.session_id}`;
                             } else {
+                                hideLoader1();
                                 alert("❌ Failed to start checkout session");
                             }
                         } catch (err) {
+                            hideLoader1();
                             console.error("❌ Error:", err);
                             alert("Something went wrong");
                         }
                     } else {
+                        hideLoader1();
                         showModal('Your cart is empty. Please add items before checking out.');
                     }
                 });
