@@ -946,6 +946,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
         document.querySelector('.add-address-btn')?.addEventListener('click', async () => {
+            showLoader();
             const label = prompt("Label (e.g., Home, Work):", "Home");
             if (!label) { hideLoader(); return alert("❌ Label is required."); }
 
@@ -962,7 +963,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 hideLoader();
                 return alert("❌ All fields except address line 2 are required.");
             }
-            showLoader();
+
             try {
                 const res = await fetch(`${CONFIG.BASE_URL}/api/user/add-address`, {
                     method: "POST",
