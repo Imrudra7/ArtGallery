@@ -946,9 +946,9 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
         document.querySelector('.add-address-btn')?.addEventListener('click', async () => {
-            showLoader();
+            //showLoader();
             const label = prompt("Label (e.g., Home, Work):", "Home");
-            if (!label) { hideLoader(); return alert("❌ Label is required."); }
+            if (!label) { return alert("❌ Label is required."); }
 
             const fullName = prompt("Full Name:");
             const addressLine1 = prompt("Address Line 1:");
@@ -960,7 +960,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const isDefault = confirm("Make this your default address?");
 
             if (!fullName || !addressLine1 || !city || !state || !postalCode || !phone) {
-                hideLoader();
+                //hideLoader();
                 return alert("❌ All fields except address line 2 are required.");
             }
 
@@ -986,7 +986,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (!res.ok) {
                     const data = await res.json();
-                    hideLoader();
+                    //hideLoader();
                     return alert(`❌ ${data.message || 'Failed to add address'}`);
                 }
 
