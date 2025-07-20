@@ -19,11 +19,11 @@ const mailRoutes = require('./routes/mailRoutes');
 const checkoutSessionRoutes = require('./routes/checkoutSessionRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 
-app.use((req, res, next) => {
-    console.log("🟢 METHOD:", req.method);
-    console.log("🟢 BODY:", req.body);
-    next();
-});
+// app.use((req, res, next) => {
+//     console.log("🟢 METHOD:", req.method);
+//     console.log("🟢 BODY:", req.body);
+//     next();
+// });
 
 
 app.use('/api/checkout', checkoutSessionRoutes);
