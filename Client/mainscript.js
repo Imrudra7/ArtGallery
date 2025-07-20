@@ -1354,8 +1354,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     return alert("❗Please fill in all required address fields.");
                 }
 
-                
-                 payload = {
+
+                payload = {
                     ...payload,
                     use_saved: false,
                     full_name: fullName,
@@ -1377,6 +1377,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // 🧾 UPI/Razorpay Flow
             try {
+                const userData = await fetch(`${CONFIG.BASE_URL}/api/user/profile`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                const userDataResult = await userData.json();
+
                 // Step 1: Create Razorpay Order from backend
                 const createRes = await fetch(`${CONFIG.BASE_URL}/api/razorpay/create-order`, {
                     method: "POST",
@@ -1444,10 +1452,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     },
                     prefill: {
-                        
-                        
-                        name: payload.full_name || "",
-                        contact: payload.phone || "",
+
+
+                        name: userDataResult.name || "",
+                        contact: userDataResult.phone || "",
+                        email: userDataResult.email || ""
                     },
                     theme: {
                         color: "#3399cc"
